@@ -11,8 +11,14 @@ index.html      Home: route search, service alerts, routes, trip planner
 route.html      Route 1: map, filters, stop schedule, service alerts
 css/tokens.css  Semantic tokens from guidelines/tokens.md + @font-face
 css/site.css    Components and responsive layout
-js/site.js      Interactions (no dependencies)
+js/site.js      Shared interactions + Home (search, carousel, planner)
+js/data.js      Schedule-data helpers (service days, times, recently visited)
+js/home.js      Home route list from data/routes.json
+js/route-page.js  Route page: filters, stops, departures, map, CSV download
 js/live-alerts.js  Live Service Alerts from Big Blue Bus's GTFS-realtime feed
+data/           Schedule data per route, built by tools/build_data.py
+tools/          build_data.py: BBB GTFS -> data/*.json (Python, no dependencies)
+vendor/leaflet  Leaflet 1.9.4 map library (BSD-2), self-hosted
 fonts/          Urbanist Medium/Bold (woff2 + ttf fallback, SIL OFL)
 assets/img      Logo, hero illustration, map artwork, route line (from Figma)
 assets/icons    UI icons (from Figma)
@@ -41,12 +47,23 @@ reference, but `.gitignore` keeps them out of the repository.
 
 ## Live data
 
-Service Alerts load live from Big Blue Bus (`https://gtfs.bigbluebus.com/alerts.bin`,
-GTFS-realtime, decoded in the browser with no libraries). Home shows all active
-alerts; the Route page shows Route 1's alerts and count. If the feed can't be
-reached, the sample alerts from the design stay in place with a note saying so.
-Everything else (routes, schedules, times) is still static reference content.
-Data is free to use under the City of Santa Monica terms of use.
+**Routes, stops and schedules** come from Big Blue Bus's published GTFS feed
+(`https://gtfs.bigbluebus.com/current.zip`). `tools/build_data.py` turns it into
+one small JSON file per route in `data/`. Every route has a page:
+`route.html?r=8`, `route.html?r=R12`, and so on.
+
+To refresh by hand: `python3 tools/build_data.py`, then commit `data/`.
+The GitHub Action in `.github/workflows/update-schedules.yml` does this every
+Monday and republishes the site when the schedule changes.
+
+**Service alerts** load live in the browser from
+`https://gtfs.bigbluebus.com/alerts.bin` (GTFS-realtime, decoded without libraries).
+If the feed can't be reached, Home keeps the sample alerts from the design.
+
+**Map**: Leaflet with OpenStreetMap tiles, shown in grayscale to match the design.
+
+All Big Blue Bus data is free to use under the City of Santa Monica terms of use.
+Times are scheduled times, not real-time predictions.
 
 ## Layout
 

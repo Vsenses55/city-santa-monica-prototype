@@ -10,7 +10,8 @@
   const FEED = "https://gtfs.bigbluebus.com/alerts.bin";
   const BBB_ALERTS = "https://www.bigbluebus.com/servicealerts";
   const TIMEOUT_MS = 8000;
-  const ROUTE_PAGE_ID = "1"; // route.html is the Route 1 page
+  // Route page: route.html?r=8 ; Home has no route
+  const ROUTE_PAGE_ID = new URLSearchParams(location.search).get("r") || (document.getElementById("service-alerts") ? "1" : null);
 
   /* ---------- Minimal protobuf reader (only what GTFS-rt alerts need) ---------- */
   function reader(buf) {
@@ -93,15 +94,19 @@
     return { updated: ts ? new Date(ts * 1000) : new Date(), alerts };
   }
 
-  async function fetchAlerts() {
+  // BBB's server sometimes returns a cached copy without its CORS header, which
+  // the browser rejects. A unique query string always gets a fresh copy (12/12 in
+  // testing vs about 4 in 6 without), and one retry covers the rest.
+  async function fetchOnce() {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
     try {
-      const res = await fetch(FEED, { signal: ctrl.signal, cache: "no-store" });
+      const res = await fetch(`${FEED}?t=${Date.now()}`, { signal: ctrl.signal, cache: "no-store" });
       if (!res.ok) throw new Error("HTTP " + res.status);
       return parse(new Uint8Array(await res.arrayBuffer()));
     } finally { clearTimeout(t); }
   }
+  const fetchAlerts = () => fetchOnce().catch(() => new Promise((r) => setTimeout(r, 600)).then(fetchOnce));
 
   /* ---------- Rendering ---------- */
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -130,10 +135,12 @@
     } else {
       track.innerHTML = data.alerts.map((a) => {
         const [label, desc] = splitHeader(a.header, a.routes);
-        const internal = a.routes.includes(ROUTE_PAGE_ID);
-        const href = internal ? "route.html#service-alerts" : a.url;
-        const ext = internal ? "" : ` target="_blank" rel="noopener" aria-label="${esc(a.header)} (opens bigbluebus.com in a new tab)"`;
-        return `<li><a class="alert-card" href="${esc(href)}"${ext}><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels">${label ? `<span class="t-heading">${esc(label)}</span>` : ""}<span class="t-small">${esc(desc)}</span></span></a></li>`;
+        // Open this site's page for the (first) affected route; system-wide notices aren't links
+        const route = a.routes[0];
+        const inner = `<img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels">${label ? `<span class="t-heading">${esc(label)}</span>` : ""}<span class="t-small">${esc(desc)}</span></span>`;
+        return route
+          ? `<li><a class="alert-card" href="route.html?r=${encodeURIComponent(route)}#service-alerts">${inner}</a></li>`
+          : `<li><div class="alert-card">${inner}</div></li>`;
       }).join("");
     }
     track.scrollLeft = 0;
@@ -150,24 +157,23 @@
     const count = document.querySelector(".alert-bar .t-body");
     if (count) count.textContent = `Service Alerts (${mine.length})`;
     if (!mine.length) {
-      body.innerHTML = `<article class="notice is-empty"><h3 class="t-strong">No service alerts for ${routeLabel(ROUTE_PAGE_ID)} right now.</h3><p class="t-body"><a href="${BBB_ALERTS}" target="_blank" rel="noopener">See all Big Blue Bus alerts</a></p></article>`;
+      body.innerHTML = `<article class="notice is-empty"><h3 class="t-strong">No service alerts for ${routeLabel(ROUTE_PAGE_ID)} right now.</h3></article>`;
     } else {
       body.innerHTML = mine.map((a) => `
         <article class="notice">
           <p class="t-strong">${a.start ? `<time datetime="${new Date(a.start * 1000).toISOString().slice(0, 10)}">${dateFmt(a.start)}</time>` : "Ongoing"}</p>
           <h3 class="t-subsection">${esc(a.header)}</h3>
-          <div class="msg t-body">${a.description.split(/\n+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("") || ""}
-            <p><a href="${esc(a.url)}" target="_blank" rel="noopener">More on bigbluebus.com</a></p>
-          </div>
+          <div class="msg t-body">${a.description.split(/\n+/).filter(Boolean).map((p) => `<p>${esc(p)}</p>`).join("")}</div>
         </article>`).join("");
     }
     setStatus(status, "live", `Live from Big Blue Bus · Updated ${timeFmt(data.updated)}`);
   }
 
   function fail() {
-    const msg = "Showing sample alerts. The live feed couldn't be reached.";
-    setStatus(document.getElementById("alerts-status"), "fallback", msg);
-    setStatus(document.getElementById("route-alerts-status"), "fallback", msg);
+    setStatus(document.getElementById("alerts-status"), "fallback", "Showing sample alerts. The live feed couldn't be reached.");
+    setStatus(document.getElementById("route-alerts-status"), "fallback", "The live feed couldn't be reached.");
+    const body = document.querySelector("#service-alerts .alerts-body");
+    if (body && !body.children.length) body.innerHTML = `<article class="notice is-empty"><h3 class="t-strong">Live alerts couldn't be loaded right now.</h3></article>`;
   }
 
   const hasHome = document.querySelector("[data-carousel]");

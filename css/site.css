@@ -27,6 +27,8 @@ a { color: inherit; }
 h1, h2, h3, h4, p, ul, ol { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 
+[hidden] { display: none !important; }
+
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
@@ -449,6 +451,16 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .map-zoom svg { width: 16px; height: 16px; }
 .map-note { position: absolute; left: 12px; bottom: 10px; background: rgb(255 255 255 / .9); border-radius: 8px; padding: 2px 8px; color: var(--type-body); }
 
+/* Live map (Leaflet). isolation keeps its internal z-indexes under the filter dropdowns */
+.map { isolation: isolate; z-index: 0; }
+.map-leaflet { position: absolute; inset: 0; border-radius: inherit; background: #E9E9E9; }
+.map .leaflet-container { font-family: var(--font-family); }
+.map .leaflet-tile-pane { filter: grayscale(1) contrast(.88) brightness(1.06); } /* OSM tiles toned to the design's gray map */
+.map .leaflet-control-attribution { font-size: 11px; background: rgb(255 255 255 / .85); }
+.map .leaflet-tooltip { font-family: var(--font-family); font-weight: 700; font-size: 13px; color: var(--type-strong); border-radius: 8px; }
+.map-controls { z-index: 500; }
+.map-msg { display: grid; place-items: center; height: 100%; color: var(--type-body); }
+
 /* Schedule + alerts columns */
 .route-cols { display: grid; grid-template-columns: minmax(0, 673fr) minmax(0, 674fr); gap: 20px; align-items: start; margin-top: 0; }
 .panel-head {
@@ -489,6 +501,19 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
   display: flex; flex-direction: column; gap: 24px;
 }
 .acc-panel[hidden] { display: none; }
+.acc-name { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; text-transform: none; }
+.acc-code { font-weight: 500; font-size: var(--small-size); color: var(--type-secondary); }
+.acc-btn[aria-expanded="true"] { color: var(--type-strong); }
+.schedule-note { padding: 0 32px 16px; font-size: var(--small-size); line-height: var(--small-lh); color: var(--type-body); }
+.schedule-note:empty { display: none; }
+.schedule-note[data-tone="warn"] { color: var(--type-strong); font-weight: 700; }
+.empty-msg { color: var(--type-body); font-size: var(--body-size); line-height: var(--body-lh); }
+.empty-msg a { color: var(--type-link); }
+.after-label { font-weight: 700; font-size: var(--small-size); line-height: var(--small-lh); color: var(--type-strong); margin-bottom: -8px; }
+.trip-note { font-weight: 500; color: var(--type-body); }
+.stops-more { align-self: flex-start; padding: 0; }
+.transfers a.badge { text-decoration: none; }
+.dp-day.no-service { color: var(--type-secondary); opacity: .55; }
 
 .departures { display: flex; flex-direction: column; gap: 11px; max-width: 554px; }
 .departures .row { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -614,6 +639,7 @@ button.time:hover { border-color: var(--border-interactive); color: var(--type-s
 
   .schedule-panel { padding: 16px; }
   .schedule-panel .panel-head { display: none; }
+  .schedule-note { padding: 0 0 12px; }
   .messaging { flex-direction: column; align-items: stretch; padding: 16px 0 12px; gap: 24px; }
   .messaging .t-heading { max-width: none; }
   .pill-download { width: 100%; }
