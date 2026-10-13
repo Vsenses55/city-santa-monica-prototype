@@ -12,6 +12,7 @@ route.html      Route 1: map, filters, stop schedule, service alerts
 css/tokens.css  Semantic tokens from guidelines/tokens.md + @font-face
 css/site.css    Components and responsive layout
 js/site.js      Interactions (no dependencies)
+js/live-alerts.js  Live Service Alerts from Big Blue Bus's GTFS-realtime feed
 fonts/          Urbanist Medium/Bold (woff2 + ttf fallback, SIL OFL)
 assets/img      Logo, hero illustration, map artwork, route line (from Figma)
 assets/icons    UI icons (from Figma)
@@ -37,6 +38,15 @@ python3 -m http.server 8000      # then open http://localhost:8000
 The site uses Urbanist (free, SIL Open Font License), so it can be published
 as is. The original Santa Monica Sharp files are still in `fonts/` for
 reference, but `.gitignore` keeps them out of the repository.
+
+## Live data
+
+Service Alerts load live from Big Blue Bus (`https://gtfs.bigbluebus.com/alerts.bin`,
+GTFS-realtime, decoded in the browser with no libraries). Home shows all active
+alerts; the Route page shows Route 1's alerts and count. If the feed can't be
+reached, the sample alerts from the design stay in place with a note saying so.
+Everything else (routes, schedules, times) is still static reference content.
+Data is free to use under the City of Santa Monica terms of use.
 
 ## Layout
 

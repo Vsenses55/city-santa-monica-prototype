@@ -334,6 +334,26 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .social a:hover { background: var(--interactive-hover-neutral); }
 .copyright { grid-column: 1 / -1; font-size: var(--caption-size); line-height: var(--caption-lh); color: var(--type-body); }
 
+/* ---------- Live feed status (Service Alerts) ---------- */
+.alerts-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+.feed-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: var(--small-size); line-height: var(--small-lh); color: var(--type-body);
+}
+.feed-status:empty { display: none; }
+.feed-status::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none;
+  background: var(--border-strong);
+}
+.feed-status[data-state="live"]::before { background: var(--data-route-indicator); box-shadow: 0 0 0 3px rgb(0 156 164 / .18); }
+.feed-status[data-state="loading"]::before { animation: feed-pulse 1s ease-in-out infinite alternate; }
+.feed-status[data-state="fallback"]::before { background: var(--status-alert); }
+@keyframes feed-pulse { from { opacity: .3; } to { opacity: 1; } }
+.alert-card.is-empty { justify-content: center; }
+.notice a { color: var(--type-link); text-transform: none; }
+.notice .msg { text-transform: none; } /* real alert copy is full sentences */
+.notice.is-empty h3 { text-transform: none; }
+
 /* ---------- Toast for prototype-only actions ---------- */
 .toast {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
@@ -476,7 +496,7 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
   position: relative; display: grid; place-items: center;
   width: 90px; height: 32px; padding: 0; border-radius: var(--radius-time);
   background: var(--surface-default); border: 0.5px solid var(--border-default);
-  font-weight: 700; font-size: 19px; line-height: 24px; letter-spacing: 0.5px; color: var(--type-body);
+  font-weight: 700; font-size: 16px; line-height: 24px; letter-spacing: 0.3px; color: var(--type-body);
   white-space: nowrap;
 }
 button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44px hit area */
