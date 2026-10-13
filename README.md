@@ -1,5 +1,7 @@
 # Big Blue Bus — 2-page responsive prototype
 
+Live site: https://vsenses55.github.io/city-santa-monica-prototype/
+
 Static HTML/CSS/JS built from the City of Santa Monica Figma file
 (Big Blue Bus page: Home Desktop/Mobile, Routes Desktop/Mobile) and the
 docs in `guidelines/`.
