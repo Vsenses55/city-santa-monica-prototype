@@ -1,0 +1,3 @@
+# Licensed City font: keep local only, never publish
+fonts/SantaMonicaSharp-*
+.DS_Store

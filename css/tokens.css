@@ -1,0 +1,127 @@
+/* Big Blue Bus — design tokens
+   Source: guidelines/tokens.md (2026-10-12); font family per the updated Figma file. Values are CSS px.
+   Typography and layout switch from Desktop to Mobile mode at 720px. */
+
+/* Urbanist (SIL Open Font License, see fonts/Urbanist-OFL.txt).
+   Replaces Santa Monica Sharp at the same 500 / 700 weights, matching the Figma font/family variable. */
+@font-face {
+  font-family: "Urbanist";
+  src: url("../fonts/Urbanist-Medium.woff2") format("woff2"),
+       url("../fonts/Urbanist-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Urbanist";
+  src: url("../fonts/Urbanist-Bold.woff2") format("woff2"),
+       url("../fonts/Urbanist-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Semantic colors */
+  --surface-background: #FFFFFF;
+  --surface-default: #FFFFFF;
+  --surface-subtle: #F8F8F8;
+  --surface-muted: #F3F3F3;
+  --surface-disabled: #F1F2F3;
+  --surface-control: #F0F0F0;
+
+  --interactive-primary: #005EB8;
+  --interactive-primary-hover: #337EC6;
+  --interactive-accent: #009CA4;
+  --interactive-inactive: #D6D6D6;
+  --interactive-idle: #F8F8F8;
+  --interactive-hover-neutral: #F2F2F2;
+  --interactive-form-focused: #CCDFF1;
+
+  --type-heading: #333333;
+  --type-primary: #000000;
+  --type-strong: #2D2D2D;
+  --type-body: #707070;
+  --type-secondary: #7D7D7D;
+  --type-placeholder: #979797;
+  --type-on-color: #FFFFFF;
+  --type-link: #005EB8;
+
+  --border-default: #D6D6D6;
+  --border-subtle: #D8D8D8;
+  --border-divider: #D0CECE;
+  --border-control: #D3D3D3;
+  --border-interactive: #005EB8;
+  --border-strong: #C3C3C3;
+  --border-high-contrast: #707070;
+  --border-faint: #F0F0F0;
+
+  --icon-default: #333333;
+  --icon-primary: #000000;
+
+  --status-alert: #FE5000;
+  --status-danger: #D11242;
+  --data-route-indicator: #009CA4;
+  --overlay-scrim: rgb(0 0 0 / 0.3);
+
+  /* Spacing (BBB / Geometry) */
+  --space-2: 2px;  --space-4: 4px;  --space-6: 6px;  --space-8: 8px;
+  --space-12: 12px; --space-16: 16px; --space-20: 20px; --space-24: 24px;
+  --space-32: 32px; --space-40: 40px; --space-48: 48px; --space-64: 64px;
+  --space-80: 80px;
+
+  /* Radius and controls */
+  --radius-time: 6px;
+  --radius-badge: 12px;
+  --radius-field: 15px;
+  --radius-card: 16px;
+  --radius-overlay: 24px;
+  --radius-pill: 999px;
+  --control-min-touch-target: 44px;
+  --control-action-height: 44px;
+  --control-field-height: 50px;
+  --control-filter-height: 48px;
+  --border-width: 1px;
+
+  /* Elevation: BBB / Elevation / Overlay */
+  --elevation-overlay: 0 0 32px 0 rgb(0 0 0 / 0.1);
+
+  /* Typography (BBB / Typography — Desktop mode) */
+  --font-family: "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display-size: 48px;    --display-lh: 48px;
+  --title-size: 40px;      --title-lh: 48px;
+  --page-size: 33px;       --page-lh: 40px;
+  --section-size: 28px;    --section-lh: 32px;
+  --subsection-size: 23px; --subsection-lh: 32px;
+  --heading-size: 19px;    --heading-lh: 20px;
+  --strong-size: 19px;     --strong-lh: 24px;
+  --body-size: 16px;       --body-lh: 26px;
+  --small-size: 14px;      --small-lh: 20px;
+  --label-size: 13px;      --label-lh: 20px;
+  --caption-size: 11px;    --caption-lh: 16px;
+
+  /* Layout (BBB / Layout — Desktop mode, reference metrics) */
+  --home-gutter: 80px;
+  --routes-gutter: 36.5px;
+  --frame-max: 1440px;
+}
+
+/* Mobile mode */
+@media (max-width: 720px) {
+  :root {
+    --page-size: 28px;
+    --section-size: 23px;
+    --strong-size: 16px;
+    --body-lh: 24px;
+    --home-gutter: 20px;
+    --routes-gutter: 16px;
+  }
+}
+
+/* Intermediate widths: gutters shrink fluidly between the two reference sizes */
+@media (min-width: 721px) and (max-width: 1279px) {
+  :root {
+    --home-gutter: clamp(20px, 6.25vw, 80px);
+    --routes-gutter: clamp(16px, 2.6vw, 36.5px);
+  }
+}

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Route 1 Schedule — Big Blue Bus</title>
+  <meta name="description" content="Route 1, Main St &amp; Santa Monica Blvd: map, stop schedules and service alerts.">
+  <link rel="preload" href="fonts/Urbanist-Bold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/Urbanist-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" href="assets/img/logo-mini.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="frame">
+
+  <!-- Desktop header: logo + route identity -->
+  <header class="route-header">
+    <a class="logo" href="index.html"><img src="assets/img/logo.svg" width="216" height="81" alt="City of Santa Monica — Big Blue Bus home"></a>
+    <div class="route-id">
+      <span class="num" aria-hidden="true">1</span>
+      <p class="text"><span class="kicker">Route 1</span><span class="name">Main St &amp; Santa Monica Blvd</span></p>
+    </div>
+  </header>
+
+  <!-- Mobile header: back + title + route summary -->
+  <header class="route-mobile-head">
+    <div class="rmh-top">
+      <a class="back" href="index.html"><span class="circ"><img src="assets/icons/chevron-back.svg" width="16" height="16" alt=""></span><span>Route 1 Schedule</span><span class="sr-only">, back to all routes</span></a>
+      <a class="logo" href="index.html"><img src="assets/img/logo-mini.svg" width="80" height="30" alt="City of Santa Monica home"></a>
+    </div>
+    <div class="rmh-card">
+      <span class="badge" aria-hidden="true">1</span>
+      <p class="text"><span>Main St &amp; Santa Monica Blvd</span><span class="to">To Venice / UCLA</span></p>
+    </div>
+  </header>
+
+  <main id="main" class="route-main">
+    <h1 class="sr-only">Route 1: Main St &amp; Santa Monica Blvd</h1>
+
+    <div class="alert-bar">
+      <a href="#service-alerts"><img src="assets/icons/alert-small.svg" width="30" height="30" alt=""><span class="t-body">Service Alerts (2)</span></a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" role="group" aria-label="Schedule filters">
+      <div class="filter">
+        <button class="pill" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="pop-direction" data-default="Direction">
+          <span class="lbl">Direction</span><img class="caret" src="assets/icons/caret-down.svg" width="13" height="8" alt="">
+        </button>
+        <div class="popover" id="pop-direction" hidden>
+          <div class="option-list" role="listbox" aria-label="Direction">
+            <button class="option" type="button" role="option" aria-selected="false">Venice</button>
+            <button class="option" type="button" role="option" aria-selected="false">UCLA (41 stops)</button>
+            <button class="option" type="button" role="option" aria-selected="false">UCLA (37 Stops)</button>
+          </div>
+          <div class="popover-actions"><button class="cancel" type="button">Cancel</button><button class="ok" type="button">OK</button></div>
+        </div>
+      </div>
+
+      <div class="filter">
+        <button class="pill" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="pop-day" data-default="Day of the Week">
+          <span class="lbl">Day of the Week</span><img class="caret" src="assets/icons/caret-down.svg" width="13" height="8" alt="">
+        </button>
+        <div class="popover datepicker" id="pop-day" role="dialog" aria-label="Choose a service day" hidden>
+          <div class="dp-month">
+            <button class="dp-nav" type="button" data-step="-1" aria-label="Previous month"><img src="assets/icons/chev-left.svg" width="8" height="13" alt=""></button>
+            <p class="t-heading" aria-live="polite"></p>
+            <button class="dp-nav" type="button" data-step="1" aria-label="Next month"><img src="assets/icons/chev-right.svg" width="8" height="13" alt=""></button>
+          </div>
+          <div class="dp-grid"></div>
+          <div class="popover-actions"><button class="cancel" type="button">Cancel</button><button class="ok" type="button">OK</button></div>
+        </div>
+      </div>
+
+      <div class="filter">
+        <button class="pill" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="pop-trips" data-default="Trips (12-4)">
+          <span class="lbl">Trips (12-4)</span><img class="caret" src="assets/icons/caret-down.svg" width="13" height="8" alt="">
+        </button>
+        <div class="popover" id="pop-trips" hidden>
+          <div class="option-list" role="listbox" aria-label="Trip times">
+            <button class="option" type="button" role="option" aria-selected="false">12am -4am</button>
+            <button class="option" type="button" role="option" aria-selected="false">4am -8am</button>
+            <button class="option" type="button" role="option" aria-selected="false">8am -12pm</button>
+            <button class="option" type="button" role="option" aria-selected="true">12pm -4pm</button>
+            <button class="option" type="button" role="option" aria-selected="false">4pm -8pm</button>
+            <button class="option" type="button" role="option" aria-selected="false">8pm - 12am</button>
+          </div>
+          <div class="popover-actions"><button class="cancel" type="button">Cancel</button><button class="ok" type="button">OK</button></div>
+        </div>
+      </div>
+
+      <button class="link-btn filter-clear" type="button">Clear All</button>
+    </div>
+
+    <!-- Map (reference artwork) -->
+    <div class="map" id="route-map" aria-label="Route 1 map">
+      <div class="map-canvas">
+        <img class="base" src="assets/img/map.jpg" data-small="assets/img/map.jpg" data-big="assets/img/map-expanded.jpg" alt="Map of Route 1 running from Main St through downtown Santa Monica toward Sunset Park">
+        <img class="route-line" src="assets/img/route-line.svg" width="377" height="248" alt="">
+      </div>
+      <div class="map-controls">
+        <button class="map-expand" type="button" aria-pressed="false" aria-controls="route-map">
+          <span class="label">Expand</span><span class="sep"></span>
+          <span class="ico"><img src="assets/icons/map-expand.svg" width="16" height="16" alt=""></span>
+        </button>
+        <div class="map-zoom">
+          <button type="button" data-zoom="1" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="6" y="0" width="4" height="16" rx="2" fill="#333"/><rect x="0" y="6" width="16" height="4" rx="2" fill="#333"/></svg></button>
+          <span class="sep"></span>
+          <button type="button" data-zoom="-1" aria-label="Zoom out" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="0" y="6" width="16" height="4" rx="2" fill="#333"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="route-cols">
+      <!-- Schedule (Routes Panel) -->
+      <section class="schedule-panel" aria-labelledby="h-sched">
+        <div class="panel-head">
+          <h2 id="h-sched" class="t-subsection">Route 1:&nbsp; Main St &amp; Santa Monica Blvd</h2>
+          <button class="dir-toggle" type="button" aria-pressed="false">
+            <span class="dir-lbl">Northbound</span><img src="assets/icons/direction-icon.svg" width="17" height="24" alt="">
+          </button>
+        </div>
+
+        <div class="messaging">
+          <p class="t-heading">Select a stop to view schedule</p>
+          <button class="pill pill-download" type="button" data-proto="A downloadable schedule wasn't supplied with the design.">
+            Download <img src="assets/icons/download-line.svg" width="17" height="15" alt="">
+          </button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc is-first">
+            <h3><button class="acc-btn" type="button" aria-expanded="true" aria-controls="acc-p0" id="acc-b0">
+              <span>Santa Monica &amp; 4th</span><span class="ico"><img src="assets/icons/acc-collapse.svg" width="14" height="14" alt=""></span>
+            </button></h3>
+            <div class="acc-panel" id="acc-p0" role="region" aria-labelledby="acc-b0">
+              <!-- Upcoming Departures -->
+              <div class="departures" role="group" aria-label="Upcoming departures">
+                <div class="row">
+                  <button class="time" type="button" aria-pressed="true">12:05 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:15 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:25 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:35 PM</button>
+                </div>
+                <div class="row">
+                  <button class="time" type="button" aria-pressed="false">12:05 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:15 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:25 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:35 PM</button>
+                </div>
+                <div class="row">
+                  <button class="time" type="button" aria-pressed="false">12:05 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:15 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:25 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:35 PM</button>
+                </div>
+                <div class="row">
+                  <button class="time" type="button" aria-pressed="false">12:05 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:15 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:25 PM</button>
+                  <button class="time" type="button" aria-pressed="false">12:35 PM</button>
+                </div>
+              </div>
+
+              <!-- Arrival Times (Stop Time rows) -->
+              <ol class="stops" aria-label="Arrival times by stop">
+                <li class="stop">
+                  <div class="stop-head"><p class="name t-body">Westwood SB  &amp; Ohio NS: #2123</p><span class="time time-static">12:45 PM</span></div>
+                  <ul class="transfers" aria-label="Transfer routes"><li><span class="badge">3</span></li><li><span class="badge">7</span></li><li><span class="badge">8</span></li><li><span class="badge">14</span></li><li><span class="badge">41</span></li></ul>
+                </li>
+                <li class="stop">
+                  <div class="stop-head"><p class="name t-body">Santa Monica WB &amp; Westwood FS: #2126</p><span class="time time-static">12:45 PM</span></div>
+                  <ul class="transfers" aria-label="Transfer routes"><li><span class="badge">3</span></li><li><span class="badge">7</span></li><li><span class="badge">8</span></li><li><span class="badge">14</span></li><li><span class="badge">41</span></li></ul>
+                </li>
+                <li class="stop">
+                  <div class="stop-head"><p class="name t-body">Westwood SB  &amp; Ohio NS: #2123</p><span class="time time-static">12:45 PM</span></div>
+                  <ul class="transfers" aria-label="Transfer routes"><li><span class="badge">3</span></li><li><span class="badge">7</span></li><li><span class="badge">8</span></li><li><span class="badge">14</span></li><li><span class="badge">41</span></li></ul>
+                </li>
+                <li class="stop">
+                  <div class="stop-head"><p class="name t-body">Santa Monica WB &amp; Veteran FS: #2628</p><span class="time time-static">12:45 PM</span></div>
+                  <ul class="transfers" aria-label="Transfer routes"><li><span class="badge">3</span></li><li><span class="badge">7</span></li><li><span class="badge">8</span></li><li><span class="badge">14</span></li><li><span class="badge">41</span></li></ul>
+                </li>
+                <li class="stop">
+                  <div class="stop-head"><p class="name t-body">Santa Monica WB &amp; Sepulveda FS: #2614</p><span class="time time-static">12:45 PM</span></div>
+                  <ul class="transfers" aria-label="Transfer routes"><li><span class="badge">3</span></li><li><span class="badge">7</span></li><li><span class="badge">8</span></li><li><span class="badge">14</span></li><li><span class="badge">41</span></li></ul>
+                </li>
+                <li class="stop">
+                  <div class="stop-head"><p class="name t-body">Santa Monica WB &amp; Sawtelle NS: #2128</p><span class="time time-static">12:45 PM</span></div>
+                  <ul class="transfers" aria-label="Transfer routes"><li><span class="badge">3</span></li><li><span class="badge">7</span></li><li><span class="badge">8</span></li><li><span class="badge">14</span></li><li><span class="badge">41</span></li></ul>
+                </li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Santa Monica &amp; Bundy</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Santa Monica &amp; Sawtelle</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Santa Monica &amp; Westwood</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Hammer Museum</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Westwood Plaza &amp; Le Conte</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Le Conte &amp; Hilgard</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+          <div class="acc"><h3><button class="acc-btn" type="button" aria-expanded="false"><span>Hilgard &amp; Strathmore</span><span class="ico"><img src="assets/icons/acc-expand.svg" width="14" height="14" alt=""></span></button></h3></div>
+        </div>
+      </section>
+
+      <!-- Service Alerts -->
+      <section class="alerts-panel" id="service-alerts" aria-labelledby="h-route-alerts" tabindex="-1">
+        <div class="panel-head"><h2 id="h-route-alerts" class="t-strong">Service Alerts</h2></div>
+        <div class="alerts-body">
+          <article class="notice">
+            <p class="t-strong"><time datetime="2021-12-16">Dec 16, 2021</time></p>
+            <h3 class="t-subsection">Route 1: Temporary Stop Closure on Lincoln at Broadway Until Further Notice</h3>
+            <div class="msg t-body">
+              <p>The Route 1 stop located on SB Lincoln Blvd. at Broadway St. will be temporarily closed beginning Friday, July 30, until further notice due to construction.</p>
+              <p>Please use the following temporary stop:<br>SB Lincoln Blvd. at California Ave. (after the intersection)</p>
+            </div>
+          </article>
+          <article class="notice">
+            <p class="t-strong"><time datetime="2021-12-11">Dec 11, 2021</time></p>
+            <h3 class="t-subsection">Route 1: Temporary Stop Closure on Lincoln at Broadway Until Further Notice</h3>
+            <div class="msg t-body">
+              <p>The Route 1 westbound stop on Pico Blvd. at Tremaine Ave. is permanently closed. Please use the following alternate stop</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <nav class="footer-links" aria-label="Footer">
+        <div>
+          <h2 class="t-strong">Your City Hall</h2>
+          <ul>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Location and Hours</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Contact Us</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">News Room</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Report an Issue</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="t-strong">Latest</h2>
+          <ul>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Events</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">News</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Disclaimer</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Privacy Policy</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Accessibility Policy</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="footer-divider" aria-hidden="true"></div>
+      <div class="footer-sub">
+        <img class="logo" src="assets/img/logo.svg" width="216" height="81" alt="City of Santa Monica">
+        <form class="subscribe" novalidate>
+          <p class="t-small" id="sub-desc">Enter your email to sign up for news and updates from the city</p>
+          <label class="sr-only" for="sub-email">Email address</label>
+          <div class="sub-field" style="margin-top:24px">
+            <input id="sub-email" type="email" autocomplete="email" placeholder="Enter here" aria-describedby="sub-desc sub-err">
+            <button type="submit" aria-label="Sign up"><img src="assets/icons/sub-arrow.svg" width="24" height="15" alt=""></button>
+          </div>
+          <p class="field-error" id="sub-err" aria-live="polite" style="margin-top:8px"></p>
+        </form>
+      </div>
+      <div class="social">
+        <h2 class="t-strong">Follow Us:</h2>
+        <ul>
+          <li><a href="#" aria-label="Twitter" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/twitter.svg" width="24" height="19" alt=""></a></li>
+          <li><a href="#" aria-label="Facebook" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/fb.svg" width="19" height="19" alt=""></a></li>
+          <li><a href="#" aria-label="Instagram" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/ig.svg" width="19" height="19" alt=""></a></li>
+          <li><a href="#" aria-label="YouTube" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/youtube.svg" width="27" height="19" alt=""></a></li>
+        </ul>
+      </div>
+      <p class="copyright">© 2026 Big Blue Bus. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" role="status" aria-live="polite"></div>
+<script src="js/site.js" defer></script>
+</body>
+</html>

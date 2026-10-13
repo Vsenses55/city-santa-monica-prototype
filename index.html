@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Big Blue Bus — Select Your Route</title>
+  <meta name="description" content="Find a Big Blue Bus route, check service alerts and plan a trip.">
+  <link rel="preload" href="fonts/Urbanist-Bold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/Urbanist-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" href="assets/img/logo-mini.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="frame">
+
+  <header class="site-header">
+    <a class="logo" href="index.html"><img src="assets/img/logo.svg" width="216" height="81" alt="City of Santa Monica — Big Blue Bus home"></a>
+    <div class="lang">
+      <button class="pill" type="button" data-proto="Language options aren't part of the design yet.">
+        Language <img class="caret" src="assets/icons/caret-down.svg" width="13" height="8" alt="">
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="home-main">
+
+    <!-- Route discovery: illustration + search -->
+    <section class="hero-section wrap" aria-labelledby="h-select">
+      <div class="page-info">
+        <h1 id="h-select" class="t-page cap">Select Your Route</h1>
+        <div class="recent">
+          <div class="recent-label">
+            <img src="assets/icons/bus-icon.svg" width="30" height="30" alt="">
+            <p class="t-heading">Recently Visited:</p>
+          </div>
+          <ul class="badges">
+            <li><a class="badge" href="route.html" aria-label="Route 5">5</a></li>
+            <li><a class="badge" href="route.html" aria-label="Rapid 12">12</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hero">
+        <img class="hero-img" src="assets/img/hero.jpg" width="1280" height="330" alt="Illustration of a Big Blue Bus driving along the Santa Monica waterfront past the pier sign and Ferris wheel">
+        <form class="search-band" role="search" action="route.html" id="route-search">
+          <div class="search">
+            <label class="sr-only" for="route-q">Find a route</label>
+            <div class="search-field">
+              <input id="route-q" name="q" type="text" inputmode="search" autocomplete="off"
+                     placeholder="Enter route, for example: 16"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="route-suggest">
+              <button class="search-go" type="submit" aria-label="Find route">
+                <img src="assets/icons/pin.svg" width="20" height="27" alt="">
+              </button>
+            </div>
+            <div class="popover suggestions" id="route-suggest" role="listbox" aria-label="Matching routes" hidden></div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Service alerts (Component 1: horizontal carousel) -->
+    <section aria-labelledby="h-alerts">
+      <div class="alerts-head"><h2 id="h-alerts" class="t-section cap">Service Alerts</h2></div>
+      <div class="carousel" data-carousel>
+        <ul class="carousel-track" tabindex="0" aria-label="Service alerts, scroll horizontally">
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route 7:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route 2:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route 3:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route 5:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Rapid 10:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route #:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route #:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route #:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+          <li><a class="alert-card" href="route.html#service-alerts"><img class="alert-icon" src="assets/icons/alert.svg" width="25" height="25" alt="Alert"><span class="labels"><span class="t-heading">Route #:</span><span class="t-small cap">Stop Closure on Pico at Tremaine</span></span></a></li>
+        </ul>
+        <div class="carousel-nav">
+          <button class="arrow" type="button" data-dir="-1" aria-label="Previous alerts"><img src="assets/icons/chev-left.svg" width="9" height="13" alt=""></button>
+          <div class="dots" role="group" aria-label="Alert pages"></div>
+          <button class="arrow" type="button" data-dir="1" aria-label="Next alerts"><img src="assets/icons/chev-right.svg" width="9" height="13" alt=""></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Routes & Schedules + Trip Planner -->
+    <section class="routes-section wrap" aria-label="Routes and trip planner">
+      <div class="routes-planner">
+        <div class="routes">
+          <h2 class="t-section cap">Routes &amp; Schedules</h2>
+          <ul class="routes-grid" id="routes-grid">
+            <!-- Column 1 -->
+            <li class="colwrap"><ul class="col">
+              <li><a class="route-item" href="route.html" data-route="1"><span class="badge badge-lg">1</span><span class="labels"><span class="t-strong">Route 1</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item" href="route.html" data-route="5"><span class="badge badge-lg">5</span><span class="labels"><span class="t-strong">Route 5</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item" href="route.html" data-route="9"><span class="badge badge-lg">9</span><span class="labels"><span class="t-strong">Route 9</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item" href="route.html" data-route="14"><span class="badge badge-lg">14</span><span class="labels"><span class="t-strong">Route 14</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item" href="route.html" data-route="17"><span class="badge badge-lg">17</span><span class="labels"><span class="t-strong">Route 17</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item" href="route.html" data-route="43"><span class="badge badge-lg">43</span><span class="labels"><span class="t-strong">Route 43</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+            </ul></li>
+            <!-- Column 2 -->
+            <li class="colwrap"><ul class="col">
+              <li><a class="route-item" href="route.html" data-route="2"><span class="badge badge-lg">2</span><span class="labels"><span class="t-strong">Route 2</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="7"><span class="badge badge-lg">7</span><span class="labels"><span class="t-strong">Route 7</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="10"><span class="badge badge-lg">10</span><span class="labels"><span class="t-strong">Rapid 10</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="15"><span class="badge badge-lg">15</span><span class="labels"><span class="t-strong">Route 15</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="18"><span class="badge badge-lg">18</span><span class="labels"><span class="t-strong">Route 18</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="44"><span class="badge badge-lg">44</span><span class="labels"><span class="t-strong">Route 44</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+            </ul></li>
+            <!-- Column 3 -->
+            <li class="colwrap"><ul class="col">
+              <li><a class="route-item is-extra" href="route.html" data-route="3"><span class="badge badge-lg">3</span><span class="labels"><span class="t-strong">Route 3</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="8"><span class="badge badge-lg">8</span><span class="labels"><span class="t-strong">Route 8</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="12"><span class="badge badge-lg">12</span><span class="labels"><span class="t-strong">Rapid 12</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="16"><span class="badge badge-lg">16</span><span class="labels"><span class="t-strong">Route 16</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="41"><span class="badge badge-lg">41</span><span class="labels"><span class="t-strong">Route 41</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+              <li><a class="route-item is-extra" href="route.html" data-route="45"><span class="badge badge-lg">45</span><span class="labels"><span class="t-strong">Route #45</span><span class="t-small">Main St &amp; Santa Monica Blvd</span></span></a></li>
+            </ul></li>
+          </ul>
+          <button class="btn btn-primary routes-more" type="button" aria-controls="routes-grid" aria-expanded="false">View All Routes</button>
+        </div>
+
+        <div class="planner" aria-labelledby="h-planner">
+          <h2 id="h-planner" class="t-section cap">Trip Planner</h2>
+          <form id="planner-form" novalidate>
+            <div class="field">
+              <label for="trip-from">From</label>
+              <input class="input" id="trip-from" name="from" type="text" autocomplete="street-address" placeholder="Address, stop or landmark" aria-describedby="trip-from-err">
+              <p class="field-error" id="trip-from-err" aria-live="polite"></p>
+            </div>
+            <div class="field">
+              <label for="trip-to">To</label>
+              <input class="input" id="trip-to" name="to" type="text" placeholder="Address, stop or landmark" aria-describedby="trip-to-err">
+              <p class="field-error" id="trip-to-err" aria-live="polite"></p>
+            </div>
+            <button class="btn btn-primary" type="submit">Get Directions</button>
+            <p class="form-status" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <nav class="footer-links" aria-label="Footer">
+        <div>
+          <h2 class="t-strong">Your City Hall</h2>
+          <ul>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Location and Hours</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Contact Us</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">News Room</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Report an Issue</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="t-strong">Latest</h2>
+          <ul>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Events</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">News</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Disclaimer</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Privacy Policy</a></li>
+            <li><a href="#" data-proto="Footer links aren't connected in this prototype.">Accessibility Policy</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="footer-divider" aria-hidden="true"></div>
+      <div class="footer-sub">
+        <img class="logo" src="assets/img/logo.svg" width="216" height="81" alt="City of Santa Monica">
+        <form class="subscribe" novalidate>
+          <p class="t-small" id="sub-desc">Enter your email to sign up for news and updates from the city</p>
+          <label class="sr-only" for="sub-email">Email address</label>
+          <div class="sub-field" style="margin-top:24px">
+            <input id="sub-email" type="email" autocomplete="email" placeholder="Enter here" aria-describedby="sub-desc sub-err">
+            <button type="submit" aria-label="Sign up"><img src="assets/icons/sub-arrow.svg" width="24" height="15" alt=""></button>
+          </div>
+          <p class="field-error" id="sub-err" aria-live="polite" style="margin-top:8px"></p>
+        </form>
+      </div>
+      <div class="social">
+        <h2 class="t-strong">Follow Us:</h2>
+        <ul>
+          <li><a href="#" aria-label="Twitter" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/twitter.svg" width="24" height="19" alt=""></a></li>
+          <li><a href="#" aria-label="Facebook" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/fb.svg" width="19" height="19" alt=""></a></li>
+          <li><a href="#" aria-label="Instagram" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/ig.svg" width="19" height="19" alt=""></a></li>
+          <li><a href="#" aria-label="YouTube" data-proto="Social links aren't connected in this prototype."><img src="assets/icons/youtube.svg" width="27" height="19" alt=""></a></li>
+        </ul>
+      </div>
+      <p class="copyright">© 2026 Big Blue Bus. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" role="status" aria-live="polite"></div>
+<script src="js/site.js" defer></script>
+</body>
+</html>
