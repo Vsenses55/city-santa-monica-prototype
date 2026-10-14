@@ -247,11 +247,20 @@
     map = L.map("map-leaflet", { zoomControl: false, scrollWheelZoom: false, dragging: !touch, tap: false,
       attributionControl: true, zoomSnap: 0.25, zoomDelta: 0.75 });
     map.on("zoomend", sizeStops);
-    // OpenStreetMap tiles (no key needed), shown in grayscale via CSS to match the design's quiet map
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    // Basemap: OpenFreeMap vector tiles (no key) styled to match the Figma map
+    // (assets/map-style.json, built by tools/make_map_style.py). Falls back to
+    // standard OpenStreetMap tiles if the browser can't draw vector maps.
+    const osm = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+    let vector = false;
+    try {
+      const c = document.createElement("canvas");
+      if (L.maplibreGL && window.maplibregl && (c.getContext("webgl2") || c.getContext("webgl"))) {
+        L.maplibreGL({ style: "assets/map-style.json", interactive: false,
+          attribution: '<a href="https://openfreemap.org">OpenFreeMap</a> ' + osm }).addTo(map);
+        vector = true;
+      }
+    } catch (e) { vector = false; }
+    if (!vector) L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: osm }).addTo(map);
     map.attributionControl.setPrefix(false);
     const wrap = $("#route-map"), exp = $(".map-expand", wrap);
     exp.addEventListener("click", () => {
@@ -273,11 +282,11 @@
     const d = dir();
     const path = d.path.length ? d.path : d.stops.map((s) => [s.lat, s.lon]);
     layers.casing = L.polyline(path, { color: "#FFFFFF", weight: 9, opacity: 0.9, interactive: false }).addTo(map);
-    layers.path = L.polyline(path, { color: "#5C5C5C", weight: 5, opacity: 1, interactive: false }).addTo(map);
+    layers.path = L.polyline(path, { color: "#005EB8", weight: 5, opacity: 1, interactive: false }).addTo(map);
     layers.stops = L.layerGroup(d.stops.map((s, i) => {
       const end = i === 0 || i === d.stops.length - 1;
       const m = L.circleMarker([s.lat, s.lon], {
-        radius: end ? 6 : 4, color: "#5C5C5C", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1, className: "map-stop",
+        radius: end ? 6 : 4, color: "#005EB8", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1, className: "map-stop",
       });
       m.isEnd = end;
       m.bindTooltip(`${s.name} · #${s.code}`, { direction: "top", offset: [0, -6] });

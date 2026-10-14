@@ -455,7 +455,7 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .map { isolation: isolate; z-index: 0; }
 .map-leaflet { position: absolute; inset: 0; border-radius: inherit; background: #E9E9E9; }
 .map .leaflet-container { font-family: var(--font-family); }
-.map .leaflet-tile-pane { filter: grayscale(1) contrast(.88) brightness(1.06); } /* OSM tiles toned to the design's gray map */
+/* Basemap colors live in assets/map-style.json */
 .map .leaflet-control-attribution { font-size: 11px; background: rgb(255 255 255 / .85); }
 .map .leaflet-tooltip { font-family: var(--font-family); font-weight: 700; font-size: 13px; color: var(--type-strong); border-radius: 8px; }
 .map-controls { z-index: 500; }
