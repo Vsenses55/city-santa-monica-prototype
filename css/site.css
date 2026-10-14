@@ -233,14 +233,14 @@ a.badge:hover { background: #007D83; }
 .carousel-track > li { flex: 0 0 305px; scroll-snap-align: start; display: flex; }
 .alert-card {
   flex: 1 1 auto; scroll-snap-align: start;
-  display: flex; flex-direction: column; justify-content: space-between; gap: 24px;
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 24px;
   min-height: 144px; padding: 24px;
   background: var(--surface-subtle); border: 1px solid var(--border-default); border-radius: var(--radius-card);
   text-decoration: none; color: var(--type-strong);
 }
 a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .alert-card .alert-icon { align-self: flex-end; width: 25px; height: 24.812px; }
-.alert-card .labels { display: flex; flex-direction: column; gap: 12px; }
+.alert-card .labels { display: flex; flex-direction: column; gap: 4px; }
 .carousel-nav { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 8px; }
 .carousel-nav .arrow, .carousel-nav .dot {
   width: 44px; height: 44px; border: 0; background: none; display: grid; place-items: center; border-radius: 50%;
