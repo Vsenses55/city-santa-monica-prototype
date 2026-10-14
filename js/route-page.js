@@ -212,6 +212,7 @@
   function openStop(i, scroll) {
     const prev = st.open;
     st.open = (prev === i) ? null : i;
+    st.picked = st.open != null; // the rider chose this stop (vs. the default first stop)
     st.trip = null; st.showAll = false;
     [prev, st.open].forEach((k) => {
       if (k == null) return;
@@ -339,11 +340,23 @@
   }
   function setDir(i) {
     if (i === st.dir) return;
-    // Keep the same stop open when it exists in the other direction's list (by name)
-    const name = st.open != null ? dir().stops[st.open].name.split(/ [NSEW]B /)[0] : null;
+    // Default: start at the new direction's first stop (the far end of the line).
+    // If the rider picked a stop, keep its counterpart across the street: the
+    // nearest stop in the other direction, if one is within about 250 m.
+    const from = st.picked && st.open != null ? dir().stops[st.open] : null;
     st.dir = i; st.trip = null; st.showAll = false;
-    const idx = name ? dir().stops.findIndex((s) => s.name.startsWith(name)) : -1;
+    let idx = -1;
+    if (from) {
+      const k = Math.cos(from.lat * Math.PI / 180);
+      let best = Infinity;
+      dir().stops.forEach((s, j) => {
+        const dm = Math.hypot(s.lat - from.lat, (s.lon - from.lon) * k) * 111320;
+        if (dm < best) { best = dm; idx = j; }
+      });
+      if (best > 250) idx = -1;
+    }
     st.open = idx > -1 ? idx : 0;
+    if (idx < 0) st.picked = false;
     update(true);
   }
 
