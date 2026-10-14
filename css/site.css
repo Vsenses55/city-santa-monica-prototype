@@ -525,7 +525,6 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
   white-space: nowrap;
 }
 button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44px hit area */
-button.time:hover { border-color: var(--border-interactive); color: var(--type-strong); }
 .time[aria-pressed="true"] { background: var(--interactive-primary); border-color: var(--interactive-primary); color: var(--type-on-color); }
 .time-static { cursor: default; }
 
