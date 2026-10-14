@@ -19,6 +19,7 @@
     const cols = [0, 1, 2].map((c) => routes.filter((_, i) => i % 3 === c));
     let n = 0;
     grid.innerHTML = cols.map((col) => `<li class="colwrap"><ul class="col">${col.map((r) => item(r, n++)).join("")}</ul></li>`).join("");
+    grid.style.setProperty("--rows", cols[0].length);
 
     // Recently visited: the last two route pages opened in this browser
     const recentWrap = document.querySelector(".recent");

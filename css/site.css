@@ -264,17 +264,22 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 /* ---------- Home: Routes & Trip Planner ---------- */
 .routes-planner { display: grid; grid-template-columns: minmax(0, 1fr) 307px; gap: 64px 91px; align-items: start; }
 .routes-grid {
-  display: grid; grid-template-columns: repeat(3, max-content); justify-content: start;
-  gap: 40px 80px; margin-top: 32px;
+  /* Fills column by column (like the Figma columns) but rows stay aligned
+     across columns when a long route name wraps. --rows is set by home.js. */
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows, 6), auto); grid-auto-flow: column;
+  gap: 40px 48px; margin-top: 32px;
 }
-.routes-grid .col { display: flex; flex-direction: column; gap: 40px; }
-.routes-grid > li { min-width: 0; }
+.routes-grid > li, .routes-grid .col { display: contents; }
+.routes-grid .col > li { min-width: 0; }
 .route-item {
-  display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--type-strong);
+  display: flex; align-items: flex-start; gap: 16px; text-decoration: none; color: var(--type-strong);
   min-height: 44px; border-radius: 12px;
 }
 .route-item .labels { display: flex; flex-direction: column; gap: 6px; text-transform: capitalize; }
-.route-item .t-small { white-space: nowrap; }
+.route-item .labels { min-width: 0; }
+.route-item > .badge { flex: none; margin-top: 5px; } /* centered on a one-line item, same spot on two-line ones */
+.route-item .t-small { overflow-wrap: anywhere; }
 .route-item:hover { color: #000; }
 .route-item:hover .badge { background: #007D83; }
 .route-item.is-match { outline: 3px solid var(--interactive-form-focused); outline-offset: 6px; }
@@ -546,8 +551,7 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
    RESPONSIVE
    ================================================================= */
 @media (max-width: 1279px) {
-  .routes-grid { grid-template-columns: repeat(auto-fill, minmax(241px, 1fr)); gap: 40px 48px; }
-  .routes-grid > li, .routes-grid .col { display: contents; }
+  .routes-grid { grid-template-columns: repeat(auto-fill, minmax(241px, 1fr)); grid-template-rows: none; grid-auto-flow: row; gap: 40px 48px; }
 }
 
 @media (max-width: 1180px) {
