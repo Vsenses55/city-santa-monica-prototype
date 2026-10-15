@@ -225,7 +225,7 @@
       if (open) renderPanel(k); else panel.innerHTML = "";
     });
     highlightStop();
-    if (scroll && st.open != null) $(`#acc-b${st.open}`).scrollIntoView({ behavior: "smooth", block: "center" });
+    if (scroll && st.open != null) $(`#acc-b${st.open}`).scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   acc.addEventListener("click", (e) => {
@@ -267,6 +267,7 @@
     exp.addEventListener("click", () => {
       const on = !wrap.classList.contains("is-expanded");
       wrap.classList.toggle("is-expanded", on);
+      stuck();
       exp.setAttribute("aria-pressed", String(on));
       exp.setAttribute("aria-label", on ? "Minimize map" : "Expand map");
       $(".label", exp).textContent = on ? "Minimize" : "Expand";
@@ -275,6 +276,11 @@
     });
     $$("[data-zoom]", wrap).forEach((b) => b.addEventListener("click", () => (+b.dataset.zoom > 0 ? map.zoomIn() : map.zoomOut())));
     window.addEventListener("resize", () => map.invalidateSize());
+    // Shadow (and, on mobile, the route tag) once the map is pinned to the top
+    let tick = false;
+    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", !wrap.classList.contains("is-expanded") && wrap.getBoundingClientRect().top <= 0.5 && scrollY > 0); };
+    addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(stuck); } }, { passive: true });
+    addEventListener("resize", stuck);
   }
   function fit() { if (map && layers.path) map.fitBounds(layers.path.getBounds(), { padding: [28, 28] }); }
   function drawMap() {

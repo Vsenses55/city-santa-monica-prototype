@@ -458,6 +458,23 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 
 /* Live map (Leaflet). isolation keeps its internal z-indexes under the filter dropdowns */
 .map { isolation: isolate; z-index: 0; }
+/* Pinned map: once you scroll to it, the map stays at the top of the window
+   while the schedule and alerts scroll beneath it. The expanded map isn't
+   pinned (it would fill the screen). */
+.map { position: sticky; top: 0; z-index: 5; transition: box-shadow .2s ease; }
+.map.is-stuck { box-shadow: 0 8px 20px rgba(0, 0, 0, .14); }
+.map.is-expanded { position: relative; }
+.acc-btn { scroll-margin-top: 346px; } /* lands just below the pinned map */
+/* Route + direction tag on the pinned map, once the page header has scrolled away */
+.map-tag {
+  position: absolute; top: 12px; left: 12px; z-index: 1000;
+  display: none; align-items: center; gap: 8px; max-width: calc(100% - 90px);
+  padding: 6px 12px 6px 6px; background: var(--surface-default); border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15); font-size: 14px; line-height: 20px; color: var(--type-strong);
+}
+.map-tag .badge { min-width: 28px; height: 28px; font-size: 15px; border-radius: 8px; flex: none; }
+.map-tag .to { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.map.is-stuck .map-tag { display: flex; }
 .map-leaflet { position: absolute; inset: 0; border-radius: inherit; background: #E9E9E9; }
 .map .leaflet-container { font-family: var(--font-family); }
 /* Basemap colors live in assets/map-style.json */
@@ -625,7 +642,8 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
 
   .route-main { padding: 0; gap: 0; }
   .alert-bar { min-height: 56px; border-radius: 0; }
-  .map { height: 220px; border-radius: 0; order: 1; }
+  .map { height: 200px; border-radius: 0; order: 1; }
+  .acc-btn { scroll-margin-top: 216px; }
   .map.is-expanded { height: 420px; }
   .alert-bar { order: 3; }
   .filters { order: 2; flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 16px; border-radius: 0; }
