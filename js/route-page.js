@@ -20,7 +20,7 @@
   let route, st, map, layers = {};
   const defaults = () => {
     const now = D.laParts();
-    return { dir: 0, date: D.today(), win: Math.min(5, Math.floor(now.minutes / 240)), open: 0, trip: null, showAll: false };
+    return { dir: 0, date: D.today(), win: Math.min(5, Math.floor(now.minutes / 240)), open: null, trip: null, showAll: false };
   };
 
   /* ---------- helpers ---------- */
@@ -212,7 +212,7 @@
   function openStop(i, scroll) {
     const prev = st.open;
     st.open = (prev === i) ? null : i;
-    st.picked = st.open != null; // the rider chose this stop (vs. the default first stop)
+    st.picked = st.open != null; // the rider opened this stop
     st.trip = null; st.showAll = false;
     [prev, st.open].forEach((k) => {
       if (k == null) return;
@@ -346,24 +346,25 @@
   }
   function setDir(i) {
     if (i === st.dir) return;
-    // Default: start at the new direction's first stop (the far end of the line).
-    // If the rider picked a stop, keep its counterpart across the street: the
-    // nearest stop in the other direction, if one is within about 250 m.
+    // Stops start collapsed. If the rider opened a stop, keep its counterpart
+    // across the street open: the nearest stop in the other direction, if one
+    // is within about 250 m. Otherwise the new direction starts collapsed too.
     const from = st.picked && st.open != null ? dir().stops[st.open] : null;
     st.dir = i; st.trip = null; st.showAll = false;
-    let idx = -1;
-    if (from) {
-      const k = Math.cos(from.lat * Math.PI / 180);
-      let best = Infinity;
-      dir().stops.forEach((s, j) => {
-        const dm = Math.hypot(s.lat - from.lat, (s.lon - from.lon) * k) * 111320;
-        if (dm < best) { best = dm; idx = j; }
-      });
-      if (best > 250) idx = -1;
-    }
-    st.open = idx > -1 ? idx : 0;
-    if (idx < 0) st.picked = false;
+    st.open = counterpart(from);
+    st.picked = st.open != null;
     update(true);
+  }
+  // Index of the stop in the current direction nearest to `from` (within ~250 m), else null
+  function counterpart(from) {
+    if (!from) return null;
+    const k = Math.cos(from.lat * Math.PI / 180);
+    let best = Infinity, idx = null;
+    dir().stops.forEach((s, j) => {
+      const dm = Math.hypot(s.lat - from.lat, (s.lon - from.lon) * k) * 111320;
+      if (dm < best) { best = dm; idx = j; }
+    });
+    return best <= 250 ? idx : null;
   }
 
   function fail(msg) {
@@ -381,8 +382,12 @@
     wireDatePicker();
     $(".dir-toggle").addEventListener("click", () => setDir((st.dir + 1) % route.directions.length));
     $(".filter-clear").addEventListener("click", () => {
-      const keepOpen = st.open;
-      st = defaults(); st.open = keepOpen ?? 0;
+      // Keep the open stop (its counterpart, if Clear All switches direction)
+      const from = st.open != null ? dir().stops[st.open] : null, sameDir = st.dir === 0;
+      st = defaults();
+      st.open = from ? (sameDir ? dir().stops.indexOf(dir().stops.find((s) => s === from)) : counterpart(from)) : null;
+      if (st.open === -1) st.open = null;
+      st.picked = st.open != null;
       update(true);
       B.toast && B.toast("Filters reset to today and the current time.");
     });

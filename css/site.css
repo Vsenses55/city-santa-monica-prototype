@@ -465,6 +465,14 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .map.is-stuck { box-shadow: 0 8px 20px rgba(0, 0, 0, .14); }
 .map.is-expanded { position: relative; }
 .acc-btn { scroll-margin-top: 346px; } /* lands just below the pinned map */
+/* Desktop: service alerts pin beside the stop list, just under the pinned map.
+   Long alert lists scroll inside the panel. */
+@media (min-width: 1101px) {
+  .alerts-panel {
+    position: sticky; top: 346px; max-height: calc(100vh - 362px);
+    overflow-y: auto; overscroll-behavior: contain;
+  }
+}
 /* Route + direction tag on the pinned map, once the page header has scrolled away */
 .map-tag {
   position: absolute; top: 12px; left: 12px; z-index: 1000;
