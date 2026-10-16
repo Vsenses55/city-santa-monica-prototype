@@ -447,12 +447,19 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
    while the schedule and alerts scroll beneath it. */
 .map { position: sticky; top: 0; z-index: 5; transition: box-shadow .2s ease; }
 .map.is-stuck { box-shadow: 0 8px 20px rgba(0, 0, 0, .14); }
-.acc-btn { scroll-margin-top: 346px; } /* lands just below the pinned map */
+/* Desktop: the filter bar pins with the map, directly above it. --pin (filter
+   bar height + gap) is measured by route-page.js; it's 0 on phones. */
+@media (min-width: 721px) {
+  .filters { position: sticky; top: 0; z-index: 6; box-shadow: 0 0 0 12px var(--surface-default); }
+  .map { top: var(--pin, 0px); }
+  .map.is-stuck { border-top-left-radius: 0; border-top-right-radius: 0; }
+}
+.acc-btn { scroll-margin-top: calc(var(--pin, 0px) + 346px); } /* lands just below the pinned map */
 /* Desktop: service alerts pin beside the stop list, just under the pinned map.
    Long alert lists scroll inside the panel. */
 @media (min-width: 1101px) {
   .alerts-panel {
-    position: sticky; top: 346px; max-height: calc(100vh - 362px);
+    position: sticky; top: calc(var(--pin, 0px) + 346px); max-height: calc(100vh - var(--pin, 0px) - 362px);
     overflow-y: auto; overscroll-behavior: contain;
   }
 }

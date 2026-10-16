@@ -271,7 +271,13 @@
     window.addEventListener("resize", () => map.invalidateSize());
     // Shadow (and, on mobile, the route tag) once the map is pinned to the top
     let tick = false;
-    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", !wrap.classList.contains("is-full") && wrap.getBoundingClientRect().top <= 0.5 && scrollY > 0); };
+    // Desktop pins the filter bar above the map: measure it so the map pins just below
+    const main = $(".route-main"), filters = $(".filters"), wide = matchMedia("(min-width: 721px)");
+    let pin = 0;
+    const measure = () => { pin = wide.matches ? filters.offsetHeight + 12 : 0; main.style.setProperty("--pin", pin + "px"); };
+    measure();
+    addEventListener("resize", measure);
+    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", !wrap.classList.contains("is-full") && wrap.getBoundingClientRect().top <= pin + 0.5 && scrollY > 0); };
     addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(stuck); } }, { passive: true });
     addEventListener("resize", stuck);
   }
