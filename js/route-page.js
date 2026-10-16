@@ -263,22 +263,26 @@
     } catch (e) { vector = false; }
     if (!vector) L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: osm }).addTo(map);
     map.attributionControl.setPrefix(false);
-    const wrap = $("#route-map"), exp = $(".map-expand", wrap);
-    exp.addEventListener("click", () => {
-      const on = !wrap.classList.contains("is-expanded");
-      wrap.classList.toggle("is-expanded", on);
-      stuck();
-      exp.setAttribute("aria-pressed", String(on));
-      exp.setAttribute("aria-label", on ? "Minimize map" : "Expand map");
-      $(".label", exp).textContent = on ? "Minimize" : "Expand";
-      $(".ico img", exp).src = on ? "assets/icons/map-minimize.svg" : "assets/icons/map-expand.svg";
-      setTimeout(() => { map.invalidateSize(); fit(); }, 220);
-    });
+    const wrap = $("#route-map");
+    // Phones: one finger scrolls the page, two fingers pan and pinch the map
+    // (Leaflet's pinch handler moves the map too). The first time someone drags
+    // one finger across the map, a short hint says so.
+    if (touch) {
+      let hinted = false, hideT;
+      const hint = $(".map-hint", wrap);
+      wrap.addEventListener("touchmove", (e) => {
+        if (hinted || e.touches.length !== 1) return;
+        hinted = true;
+        hint.classList.add("is-on");
+        clearTimeout(hideT);
+        hideT = setTimeout(() => hint.classList.remove("is-on"), 1600);
+      }, { passive: true });
+    }
     $$("[data-zoom]", wrap).forEach((b) => b.addEventListener("click", () => (+b.dataset.zoom > 0 ? map.zoomIn() : map.zoomOut())));
     window.addEventListener("resize", () => map.invalidateSize());
     // Shadow (and, on mobile, the route tag) once the map is pinned to the top
     let tick = false;
-    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", !wrap.classList.contains("is-expanded") && wrap.getBoundingClientRect().top <= 0.5 && scrollY > 0); };
+    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", wrap.getBoundingClientRect().top <= 0.5 && scrollY > 0); };
     addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(stuck); } }, { passive: true });
     addEventListener("resize", stuck);
   }

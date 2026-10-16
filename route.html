@@ -88,12 +88,9 @@
     <!-- Map: route path and stops on OpenStreetMap tiles -->
     <div class="map" id="route-map">
       <div class="map-leaflet" id="map-leaflet" role="region" aria-label="Route map"></div>
+      <p class="map-hint" aria-hidden="true">Use two fingers to move the map</p>
       <div class="map-tag" aria-hidden="true"><span class="badge" data-bind="badge"></span><span class="to" data-bind="to"></span></div>
       <div class="map-controls">
-        <button class="map-expand" type="button" aria-pressed="false" aria-controls="route-map" aria-label="Expand map">
-          <span class="label">Expand</span><span class="sep"></span>
-          <span class="ico"><img src="assets/icons/map-expand.svg" width="16" height="16" alt=""></span>
-        </button>
         <div class="map-zoom">
           <button type="button" data-zoom="1" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="6" y="0" width="4" height="16" rx="2" fill="#333"/><rect x="0" y="6" width="16" height="4" rx="2" fill="#333"/></svg></button>
           <span class="sep"></span>
