@@ -466,14 +466,8 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .map-tag .badge { min-width: 28px; height: 28px; font-size: 15px; border-radius: 8px; flex: none; }
 .map-tag .to { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .map.is-stuck .map-tag { display: flex; }
-/* Phones: "use two fingers" hint, shown briefly after a one-finger drag on the map */
-.map-hint {
-  position: absolute; inset: 0; z-index: 1001; margin: 0; pointer-events: none;
-  display: grid; place-items: center; padding: 16px; text-align: center;
-  background: rgb(0 0 0 / .45); color: #fff; font-weight: 700; font-size: 16px; line-height: 24px;
-  opacity: 0; transition: opacity .25s ease;
-}
-.map-hint.is-on { opacity: 1; }
+/* Full-screen map + bottom sheet: phones only (see the 720px block) */
+.map-expand, .map-sheet { display: none; }
 .map-leaflet { position: absolute; inset: 0; border-radius: inherit; background: #E9E9E9; }
 .map .leaflet-container { font-family: var(--font-family); }
 /* Basemap colors live in assets/map-style.json */
@@ -642,6 +636,40 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
   .alert-bar { min-height: 56px; border-radius: 0; }
   .map { height: 200px; border-radius: 0; order: 1; }
   .acc-btn { scroll-margin-top: 216px; }
+
+  /* Expand: full-screen map, stops in a slide-up sheet */
+  .map-expand {
+    display: grid; place-items: center; width: 44px; height: 44px; margin-right: -4px;
+    background: var(--surface-default); border: 0; border-radius: 10px; box-shadow: 0 0 2px rgb(0 0 0 / .16);
+  }
+  .map-expand img { width: 16px; height: 16px; }
+  body.map-open { overflow: hidden; }
+  .map.is-full { position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 100; box-shadow: none; }
+  .map.is-full .map-tag { display: none; }
+  .map.is-full .map-controls { top: max(12px, env(safe-area-inset-top)); }
+  .map.is-full .map-sheet { display: flex; }
+  .map.is-full .leaflet-bottom.leaflet-right { bottom: auto; right: auto; top: max(12px, env(safe-area-inset-top)); left: 0; } /* map credits stay visible above the sheet */
+  .map-sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 1002;
+    height: 62vh; height: 62dvh; flex-direction: column;
+    background: var(--surface-default); border-radius: 20px 20px 0 0; box-shadow: 0 -4px 24px rgb(0 0 0 / .16);
+    transform: translateY(calc(100% - var(--peek, 96px)));
+    transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+  }
+  .map-sheet.is-half { transform: translateY(0); }
+  .map-sheet.is-dragging { transition: none; }
+  .sheet-handle, .sheet-head { touch-action: none; }
+  .sheet-handle { flex: none; width: 100%; height: 24px; border: 0; background: none; display: grid; place-items: center; cursor: grab; }
+  .sheet-handle span { width: 40px; height: 5px; border-radius: 3px; background: #C4C4C4; }
+  .sheet-head { flex: none; display: flex; align-items: center; gap: 12px; padding: 0 16px 14px; }
+  .sheet-head .badge { min-width: 40px; height: 40px; flex: none; }
+  .sheet-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 20px; }
+  .sheet-title .to { color: var(--type-body); }
+  .sheet-dir { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 22px; background: var(--surface-subtle); }
+  .sheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; border-top: 1px solid var(--border-default); }
+  .sheet-body .schedule-note { padding: 12px 16px 0; }
+  .sheet-body .schedule-note:empty { display: none; }
+  .map-sheet .acc-btn { scroll-margin-top: 0; }
   .alert-bar { order: 3; }
   .filters { order: 2; flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 16px; border-radius: 0; }
   .filter .pill { width: 100%; }

@@ -54,6 +54,7 @@
     document.title = `${route.label} Schedule — Big Blue Bus`;
     const tog = $(".dir-toggle");
     tog.hidden = route.directions.length < 2;
+    $(".sheet-dir").hidden = route.directions.length < 2;
     $(".dir-lbl", tog).textContent = `To ${dir().headsign}`;
     tog.setAttribute("aria-label", `Direction: to ${dir().headsign}. Switch direction`);
     $('[data-filter="direction"] .lbl').textContent = `To ${dir().headsign}`;
@@ -225,6 +226,7 @@
       if (open) renderPanel(k); else panel.innerHTML = "";
     });
     highlightStop();
+    if (st.open != null && document.body.classList.contains("map-open")) { $(".map-sheet").classList.add("is-half"); focusStop(); }
     if (scroll && st.open != null) $(`#acc-b${st.open}`).scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -264,29 +266,107 @@
     if (!vector) L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: osm }).addTo(map);
     map.attributionControl.setPrefix(false);
     const wrap = $("#route-map");
-    // Phones: one finger scrolls the page, two fingers pan and pinch the map
-    // (Leaflet's pinch handler moves the map too). The first time someone drags
-    // one finger across the map, a short hint says so.
-    if (touch) {
-      let hinted = false, hideT;
-      const hint = $(".map-hint", wrap);
-      wrap.addEventListener("touchmove", (e) => {
-        if (hinted || e.touches.length !== 1) return;
-        hinted = true;
-        hint.classList.add("is-on");
-        clearTimeout(hideT);
-        hideT = setTimeout(() => hint.classList.remove("is-on"), 1600);
-      }, { passive: true });
-    }
+    initFullMap(wrap, touch);
     $$("[data-zoom]", wrap).forEach((b) => b.addEventListener("click", () => (+b.dataset.zoom > 0 ? map.zoomIn() : map.zoomOut())));
     window.addEventListener("resize", () => map.invalidateSize());
     // Shadow (and, on mobile, the route tag) once the map is pinned to the top
     let tick = false;
-    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", wrap.getBoundingClientRect().top <= 0.5 && scrollY > 0); };
+    const stuck = () => { tick = false; wrap.classList.toggle("is-stuck", !wrap.classList.contains("is-full") && wrap.getBoundingClientRect().top <= 0.5 && scrollY > 0); };
     addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(stuck); } }, { passive: true });
     addEventListener("resize", stuck);
   }
-  function fit() { if (map && layers.path) map.fitBounds(layers.path.getBounds(), { padding: [28, 28] }); }
+  function fit() {
+    if (!map || !layers.path) return;
+    const sheet = $(".map-sheet");
+    const full = $("#route-map").classList.contains("is-full");
+    map.fitBounds(layers.path.getBounds(), full
+      ? { paddingTopLeft: [28, 72], paddingBottomRight: [28, sheet.offsetHeight - sheetOffset(sheet) + 28] }
+      : { padding: [28, 28] });
+  }
+  // Full-screen map: move the open stop into the visible area above the sheet
+  function focusStop() {
+    if (!map || st.open == null) return;
+    const s = dir().stops[st.open], sheet = $(".map-sheet"), size = map.getSize();
+    const visible = size.y - (sheet.offsetHeight - sheetOffset(sheet));
+    const p = map.latLngToContainerPoint([s.lat, s.lon]);
+    map.panBy([p.x - size.x / 2, p.y - visible / 2], { animate: true, duration: 0.35 });
+  }
+  // How far the sheet is pushed down (0 = half height, larger = peeking)
+  function sheetOffset(sheet) { return sheet.classList.contains("is-half") ? 0 : sheet.offsetHeight - peekHeight(sheet); }
+  function peekHeight(sheet) { return $(".sheet-handle", sheet).offsetHeight + $(".sheet-head", sheet).offsetHeight + 8; }
+
+  /* ---------- Phones: full-screen map with the stops in a bottom sheet ---------- */
+  function initFullMap(wrap, touch) {
+    const exp = $(".map-expand", wrap), sheet = $(".map-sheet", wrap), body = $(".sheet-body", sheet);
+    const note = $("#schedule-note");
+    const home = document.createComment("schedule list home");
+    let full = false;
+
+    function setFull(on, fromHistory) {
+      if (on === full) return;
+      full = on;
+      if (on) { note.before(home); body.append(note, acc); }
+      else { home.after(note, acc); home.remove(); }
+      wrap.classList.toggle("is-full", on);
+      document.body.classList.toggle("map-open", on);
+      exp.setAttribute("aria-pressed", String(on));
+      exp.setAttribute("aria-label", on ? "Minimize map" : "Expand map");
+      $("img", exp).src = on ? "assets/icons/map-minimize.svg" : "assets/icons/map-expand.svg";
+      // Full screen: one finger pans the map (nothing scrolls underneath)
+      if (on) map.dragging.enable(); else if (touch) map.dragging.disable();
+      sheet.classList.toggle("is-half", on && st.open != null);
+      sheet.style.setProperty("--peek", peekHeight(sheet) + "px");
+      // The phone's back gesture closes the full map instead of leaving the page
+      if (on) history.pushState({ bbbMap: true }, "");
+      else if (!fromHistory && history.state && history.state.bbbMap) history.back();
+      setTimeout(() => {
+        map.invalidateSize(); fit();
+        if (on && st.open != null) { $(`#acc-b${st.open}`).scrollIntoView({ block: "start" }); focusStop(); }
+        if (!on && st.open != null) $(`#acc-b${st.open}`).scrollIntoView({ block: "start" });
+      }, 60);
+    }
+    exp.addEventListener("click", () => setFull(!full));
+    addEventListener("popstate", () => { if (full) setFull(false, true); });
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && full) setFull(false); });
+    addEventListener("resize", () => { if (full && !matchMedia("(max-width: 720px)").matches) setFull(false); });
+    $(".sheet-dir", sheet).addEventListener("click", () => setDir((st.dir + 1) % route.directions.length));
+
+    // Drag the sheet between "peek" and "half"; a tap on the handle toggles
+    const setHalf = (half) => { sheet.classList.toggle("is-half", half); setTimeout(fit, 320); };
+    let drag = null;
+    $$(".sheet-handle, .sheet-head", sheet).forEach((el) => {
+      el.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".sheet-dir")) return;
+        drag = { y: e.clientY, py: e.clientY, pt: e.timeStamp, v: 0, base: sheetOffset(sheet), at: sheetOffset(sheet), moved: false };
+        sheet.classList.add("is-dragging");
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const dy = e.clientY - drag.y;
+        if (Math.abs(dy) > 4) drag.moved = true;
+        const max = sheet.offsetHeight - peekHeight(sheet);
+        drag.at = Math.min(max, Math.max(0, drag.base + dy));
+        const dt = e.timeStamp - drag.pt;
+        if (dt > 0) drag.v = (e.clientY - drag.py) / dt;
+        drag.py = e.clientY; drag.pt = e.timeStamp;
+        sheet.style.transform = `translateY(${drag.at}px)`;
+      });
+      const end = () => {
+        if (!drag) return;
+        sheet.classList.remove("is-dragging");
+        sheet.style.transform = "";
+        const max = sheet.offsetHeight - peekHeight(sheet);
+        if (!drag.moved) setHalf(!sheet.classList.contains("is-half"));
+        else setHalf(drag.v < -0.3 ? true : drag.v > 0.3 ? false : drag.at < max / 2);
+        drag = null;
+      };
+      el.addEventListener("pointerup", end);
+      el.addEventListener("pointercancel", end);
+    });
+    // Keyboard: Enter/Space on the handle toggles the sheet
+    $(".sheet-handle", sheet).addEventListener("click", (e) => { if (e.detail === 0) setHalf(!sheet.classList.contains("is-half")); });
+  }
   function drawMap() {
     if (!map) return;
     Object.values(layers).forEach((l) => l && map.removeLayer(l));
@@ -358,6 +438,10 @@
     st.open = counterpart(from);
     st.picked = st.open != null;
     update(true);
+    if (document.body.classList.contains("map-open") && st.open != null) {
+      $(`#acc-b${st.open}`).scrollIntoView({ block: "start" });
+      focusStop();
+    }
   }
   // Index of the stop in the current direction nearest to `from` (within ~250 m), else null
   function counterpart(from) {

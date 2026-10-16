@@ -88,15 +88,26 @@
     <!-- Map: route path and stops on OpenStreetMap tiles -->
     <div class="map" id="route-map">
       <div class="map-leaflet" id="map-leaflet" role="region" aria-label="Route map"></div>
-      <p class="map-hint" aria-hidden="true">Use two fingers to move the map</p>
       <div class="map-tag" aria-hidden="true"><span class="badge" data-bind="badge"></span><span class="to" data-bind="to"></span></div>
       <div class="map-controls">
+        <!-- Phones only: opens the full-screen map with the stops in a bottom sheet -->
+        <button class="map-expand" type="button" aria-pressed="false" aria-label="Expand map"><img src="assets/icons/map-expand.svg" width="16" height="16" alt=""></button>
         <div class="map-zoom">
           <button type="button" data-zoom="1" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="6" y="0" width="4" height="16" rx="2" fill="#333"/><rect x="0" y="6" width="16" height="4" rx="2" fill="#333"/></svg></button>
           <span class="sep"></span>
           <button type="button" data-zoom="-1" aria-label="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="0" y="6" width="16" height="4" rx="2" fill="#333"/></svg></button>
         </div>
       </div>
+      <!-- Phones, expanded map only: stops in a slide-up sheet -->
+      <section class="map-sheet" aria-label="Stops">
+        <button class="sheet-handle" type="button" aria-label="Show more of the stop list"><span></span></button>
+        <div class="sheet-head">
+          <span class="badge" aria-hidden="true" data-bind="badge"></span>
+          <p class="sheet-title"><span class="t-strong" data-bind="label"></span><span class="to" data-bind="to"></span></p>
+          <button class="sheet-dir" type="button" aria-label="Switch direction"><img src="assets/icons/direction-icon.svg" width="17" height="24" alt=""></button>
+        </div>
+        <div class="sheet-body"></div>
+      </section>
     </div>
 
     <div class="route-cols">
