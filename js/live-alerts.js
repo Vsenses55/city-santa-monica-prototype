@@ -7,6 +7,7 @@
    unless it actually came from the feed. */
 (function () {
   "use strict";
+  if (document.documentElement.classList.contains("is-device")) return; // desktop: the page runs inside the phone frame instead
   const FEED = "https://gtfs.bigbluebus.com/alerts.bin";
   const BBB_ALERTS = "https://www.bigbluebus.com/servicealerts";
   const TIMEOUT_MS = 8000;

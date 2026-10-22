@@ -2,6 +2,7 @@
    The static list in index.html stays as a fallback if the data can't load. */
 (function () {
   "use strict";
+  if (document.documentElement.classList.contains("is-device")) return; // desktop: the page runs inside the phone frame instead
   const D = window.BBBData;
   const grid = document.getElementById("routes-grid");
   if (!D || !grid) return;

@@ -713,3 +713,30 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* =================================================================
+   DESKTOP VIEWING: the mobile site inside a phone frame
+   (js/device-frame.js). The page itself is hidden; the frame loads it
+   at phone width, so the mobile layout runs exactly as on a phone.
+   ================================================================= */
+html.is-device, html.is-device body { height: 100%; }
+html.is-device body {
+  margin: 0; padding: 0; overflow: hidden;
+  display: grid; place-items: center;
+  background: #0B0F12;
+}
+html.is-device body > :not(.device) { display: none !important; }
+.device {
+  box-sizing: border-box; width: 416px; height: min(872px, calc(100vh - 48px));
+  padding: 12px; border-radius: 54px;
+  background: #121A1E; border: 1px solid #222B30;
+  box-shadow: 0 40px 100px rgb(0 0 0 / .6), inset 0 0 0 2px #0B0F12;
+}
+.device-screen { width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: var(--surface-default); }
+.device iframe { display: block; width: 100%; height: 100%; border: 0; }
+/* Inside the frame: no visible scrollbar, like a phone */
+html.in-device { scrollbar-width: none; }
+html.in-device::-webkit-scrollbar { display: none; }
+/* Full-screen map inside the frame: keep the top controls and map credits clear of the rounded screen corners */
+html.in-device .map.is-full .map-controls { top: 26px; right: 22px; }
+html.in-device .map.is-full .leaflet-bottom.leaflet-right { top: 30px; left: 26px; }

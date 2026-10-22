@@ -2,6 +2,7 @@
    Static reference content only: nothing here is live transit data. */
 (function () {
   "use strict";
+  if (document.documentElement.classList.contains("is-device")) return; // desktop: the page runs inside the phone frame instead
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 

@@ -2,6 +2,7 @@
    route.html?r=8 shows Route 8; no parameter shows Route 1. */
 (function () {
   "use strict";
+  if (document.documentElement.classList.contains("is-device")) return; // desktop: the page runs inside the phone frame instead
   const D = window.BBBData, B = window.BBB || {};
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
