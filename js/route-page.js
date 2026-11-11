@@ -70,14 +70,12 @@
       `<button class="option" type="button" role="option" data-v="${i}" aria-selected="${i === st.win}">${w[2]}</button>`).join("");
   }
 
-  /* Dropdown filters: pick an option, OK applies, Cancel / Escape closes */
+  /* Dropdown filters: picking an option applies it right away; Escape or a tap outside closes */
   function wireListFilter(name, apply) {
     const f = $(`[data-filter="${name}"]`), trigger = $(".pill", f), pop = $(".popover", f);
-    let pending = null;
     trigger.addEventListener("click", (e) => {
       e.stopPropagation();
       if (!pop.hidden) { B.closePop(false); return; }
-      pending = null;
       B.showPop(pop, trigger);
       ($('[aria-selected="true"]', pop) || $(".option", pop)).focus();
     });
@@ -85,16 +83,14 @@
       const o = e.target.closest(".option");
       if (!o) return;
       $$(".option", pop).forEach((x) => x.setAttribute("aria-selected", String(x === o)));
-      pending = +o.dataset.v;
+      B.closePop(true);
+      apply(+o.dataset.v);
     });
-    pop.addEventListener("dblclick", (e) => { if (e.target.closest(".option")) $(".ok", pop).click(); });
     pop.addEventListener("keydown", (e) => {
       const opts = $$(".option", pop), i = opts.indexOf(document.activeElement);
       if (e.key === "ArrowDown" && i > -1) { e.preventDefault(); opts[(i + 1) % opts.length].focus(); }
       if (e.key === "ArrowUp" && i > -1) { e.preventDefault(); opts[(i - 1 + opts.length) % opts.length].focus(); }
     });
-    $(".ok", pop).addEventListener("click", () => { if (pending != null) apply(pending); B.closePop(true); });
-    $(".cancel", pop).addEventListener("click", () => B.closePop(true));
   }
 
   /* Date picker (native calendar composition) */
@@ -135,9 +131,9 @@
       const k = b.dataset.ymd;
       dp.pick = { y: +k.slice(0, 4), m: +k.slice(4, 6), d: +k.slice(6) };
       $$(".dp-day", pop).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      // Picking a day applies it right away
+      st.date = dp.pick; st.trip = null; B.closePop(true); update();
     });
-    $(".ok", pop).addEventListener("click", () => { st.date = dp.pick; st.trip = null; B.closePop(true); update(); });
-    $(".cancel", pop).addEventListener("click", () => B.closePop(true));
   }
 
   /* ---------- schedule ---------- */
