@@ -217,7 +217,7 @@ a.badge:hover { background: #007D83; }
 .search-field .search-go { width: 44px; height: 44px; margin-right: -12px; border: 0; background: none; display: grid; place-items: center; border-radius: 50%; }
 .search-field .search-go img { width: 20px; height: 27px; }
 .suggestions { left: 0; right: 0; min-width: 0; padding: 24px 16px; max-height: 420px; overflow-y: auto; }
-.suggestions .option { gap: 12px; }
+.suggestions .option { gap: 12px; text-decoration: none; line-height: 20px; padding-top: 8px; padding-bottom: 8px; } /* links without underlines; two-line names sit tight */
 .suggestions .option .badge { min-width: 32px; height: 32px; font-size: 16px; }
 .suggestions .empty { padding: 8px 17px; color: var(--type-body); }
 
