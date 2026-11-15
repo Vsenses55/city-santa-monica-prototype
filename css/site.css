@@ -170,7 +170,10 @@ ul, ol { padding: 0; list-style: none; }
   font-weight: 500; font-size: 16px; color: #000;
 }
 .dp-day:hover { background: var(--interactive-hover-neutral); }
-.dp-day.is-outside { color: var(--type-secondary); }
+.dp-day.is-outside { color: var(--type-secondary); opacity: .45; }
+.dp-day.is-past { color: var(--type-secondary); opacity: .35; cursor: default; }
+.dp-day.is-past:hover { background: none; }
+.dp-nav:disabled { opacity: .3; cursor: default; }
 .dp-day[aria-pressed="true"] { background: var(--data-route-indicator); color: var(--type-on-color); font-weight: 700; font-size: 19px; }
 
 /* ---------- Numeric / route badges ---------- */

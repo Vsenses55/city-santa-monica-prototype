@@ -100,15 +100,23 @@
     $(".dp-month .t-heading", pop).textContent = D.toDate(dp.view).toLocaleDateString("en-US", { month: "long", year: "numeric" });
     const first = D.toDate(dp.view);
     const start = new Date(first); start.setDate(1 - first.getDay());
+    // Standard month grid: only the weeks this month touches (4 to 6 rows)
+    const daysInMonth = new Date(dp.view.y, dp.view.m, 0).getDate();
+    const cells = Math.ceil((first.getDay() + daysInMonth) / 7) * 7;
+    const todayKey = D.ymd(D.today());
     let html = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => `<span class="dow" aria-hidden="true">${d}</span>`).join("");
-    for (let i = 0; i < 42; i++) {
+    for (let i = 0; i < cells; i++) {
       const dt = new Date(start); dt.setDate(start.getDate() + i);
       const c = D.fromDate(dt);
       const outside = c.m !== dp.view.m;
+      const past = D.ymd(c) < todayKey; // past days can't be picked
       const runs = D.activeServices(route, c).size > 0;
-      html += `<button type="button" class="dp-day${outside ? " is-outside" : ""}${runs ? "" : " no-service"}" data-ymd="${D.ymd(c)}" aria-pressed="${D.sameDay(c, dp.pick)}" aria-label="${esc(longDay(c))}${runs ? "" : ", no service"}">${c.d}</button>`;
+      html += `<button type="button" class="dp-day${outside ? " is-outside" : ""}${past ? " is-past" : ""}${runs ? "" : " no-service"}"${past ? " disabled" : ""} data-ymd="${D.ymd(c)}" aria-pressed="${D.sameDay(c, dp.pick)}" aria-label="${esc(longDay(c))}${runs ? "" : ", no service"}">${c.d}</button>`;
     }
     grid.innerHTML = html;
+    // No browsing back before the current month
+    const t = D.today();
+    $('.dp-nav[data-step="-1"]', pop).disabled = dp.view.y < t.y || (dp.view.y === t.y && dp.view.m <= t.m);
   }
   function wireDatePicker() {
     const f = $('[data-filter="day"]'), trigger = $(".pill", f), pop = $("#pop-day");
