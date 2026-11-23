@@ -259,7 +259,7 @@
     const pick = e.target.closest(".stop-pick");
     if (pick) {
       const k = +pick.dataset.k;
-      st.dest = st.dest === k ? null : k; st.leftNote = null;
+      st.dest = st.dest === k ? null : k; st.leftNote = null; st.cardMin = false; clearTimeout(minT);
       renderPanel(st.open);
       if (st.dest != null) fitTrip();
       const again = $(`#acc-p${st.open} .stop-pick[data-k="${k}"]`);
@@ -302,6 +302,22 @@
     syncPeek();
     if (!t) return;
     const saved = D.trips.has(savedShape(t));
+    card.classList.toggle("is-min", !!st.cardMin);
+    document.body.classList.toggle("trip-collapsed", !!st.cardMin);
+    const closeBtn = `<button class="trip-close" type="button" aria-label="Clear destination"><img src="assets/icons/close.svg" width="14" height="14" alt=""></button>`;
+    // Collapsed: a slim pill with the times; tap it to see the whole trip
+    if (st.cardMin) {
+      card.innerHTML = `
+        <span class="badge" aria-hidden="true">${esc(route.badge)}</span>
+        <button class="trip-expand" type="button" aria-expanded="false" aria-label="Show your trip: ${esc(D.shortStop(t.from.name))} to ${esc(D.shortStop(t.to.name))}, ${t.dayNote ? t.dayNote + " " : ""}${D.fmt(t.dep)} to ${D.fmt(t.arr)}">
+          <span class="pill-times">${t.dayNote ? `${esc(t.dayNote)} ` : ""}${D.fmt(t.dep)}<span class="arrow" aria-hidden="true">→</span>${D.fmt(t.arr)}</span>
+          <span class="pill-to">to ${esc(D.shortStop(t.to.name))}</span>
+          <img class="chev" src="assets/icons/chev-left.svg" width="8" height="13" alt="">
+        </button>
+        ${closeBtn}`;
+      syncPeek();
+      return;
+    }
     const times = `<p class="trip-times"><strong>${t.dayNote ? `${t.dayNote} ` : ""}${D.fmt(t.dep)}</strong><span class="arrow" aria-hidden="true">→</span><strong>${D.fmt(t.arr)}</strong>
          <span class="trip-meta">${t.count} stop${t.count === 1 ? "" : "s"} · ${t.arr - t.dep} min · scheduled</span></p>`;
     card.innerHTML = `
@@ -313,24 +329,35 @@
         ${times}
       </div>
       <div class="trip-actions">
-        <button class="trip-close" type="button" aria-label="Clear destination"><img src="assets/icons/close.svg" width="14" height="14" alt=""></button>
+        <div class="trip-top">
+          <button class="trip-min" type="button" aria-label="Minimize trip"><img class="chev" src="assets/icons/chev-left.svg" width="8" height="13" alt=""></button>
+          ${closeBtn}
+        </div>
         <button class="trip-save" type="button" aria-pressed="${saved}">${saved ? "Saved" : "Save"}</button>
       </div>`;
+    syncPeek();
   }
   // What gets stored for "My Trips": ids (stable across data rebuilds) plus labels for the home page
+  let minT;
   const savedShape = (t) => ({ r: route.short, d: st.dir, from: t.from.id, to: t.to.id,
     badge: route.badge, label: route.label, fromName: t.from.name, toName: t.to.name, headsign: dir().headsign });
   if (card) {
     card.addEventListener("click", (e) => {
       const t = tripInfo();
       if (!t) return;
-      if (e.target.closest(".trip-close")) { st.dest = null; renderPanel(st.open); return; }
+      if (e.target.closest(".trip-close")) { st.dest = null; st.cardMin = false; renderPanel(st.open); return; }
+      // Pill tapped: show the whole card again
+      if (st.cardMin) { st.cardMin = false; renderTrip(); const m = $(".trip-min", card); if (m) m.focus(); return; }
+      if (e.target.closest(".trip-min")) { st.cardMin = true; renderTrip(); const x = $(".trip-expand", card); if (x) x.focus(); return; }
       if (e.target.closest(".trip-save")) {
         const shape = savedShape(t);
-        if (D.trips.has(shape)) { D.trips.remove(shape); B.toast && B.toast("Removed from My Trips."); }
-        else if (D.trips.add(shape)) B.toast && B.toast("Saved. Find it under My Trips on the home page.");
-        else B.toast && B.toast("This browser won't let the site save trips.");
+        if (D.trips.has(shape)) { D.trips.remove(shape); B.toast && B.toast("Removed from My Trips."); renderTrip(); return; }
+        if (!D.trips.add(shape)) { B.toast && B.toast("This browser won't let the site save trips."); return; }
+        B.toast && B.toast("Saved. Find it under My Trips on the home page.");
         renderTrip();
+        // Saved: after a moment, shrink to the pill to give the page back
+        clearTimeout(minT);
+        minT = setTimeout(() => { if (st.dest != null) { st.cardMin = true; renderTrip(); } }, 900);
         return;
       }
       // Anywhere else on the card: bring the trip back into view
@@ -608,7 +635,7 @@
     const stops = dir().stops, i = stops.findIndex((s) => s.id === from), k = stops.findIndex((s) => s.id === to);
     if (i < 0 || k <= i) { st.dir = 0; return; }
     const n = D.nextTrip(route, st.dir, i, k, D.today(), D.laParts().minutes);
-    st.open = i; st.dest = k; st.picked = true;
+    st.open = i; st.dest = k; st.picked = true; st.cardMin = true;
     if (n) { st.date = n.date; st.win = winOf(n.dep); st.trip = n.trip; }
   }
 

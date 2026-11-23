@@ -788,8 +788,30 @@ html.in-device .map.is-full .leaflet-bottom.leaflet-right { top: 30px; left: 26p
   font: inherit; font-weight: 700; font-size: 14px; color: var(--interactive-primary);
 }
 .trip-save[aria-pressed="true"] { background: var(--interactive-primary); color: var(--type-on-color); }
+/* Minimize / expand arrows (the left chevron, turned) */
+.trip-top { display: flex; align-items: center; gap: 2px; margin: -6px -6px 0 0; }
+.trip-top .trip-close { margin: 0; }
+.trip-min { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 16px; background: none; cursor: pointer; }
+.trip-min:hover { background: var(--interactive-hover-neutral); }
+.trip-min .chev { transform: rotate(-90deg); }
+/* Collapsed: a slim pill */
+.trip-card.is-min {
+  grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+  padding: 6px 6px 6px 8px; border-radius: 999px;
+}
+.trip-card.is-min .badge { min-width: 32px; height: 32px; font-size: 15px; margin: 0; border-radius: 16px; }
+.trip-expand {
+  min-width: 0; display: flex; align-items: center; gap: 10px; padding: 4px 0; border: 0; background: none;
+  font: inherit; color: var(--type-strong); text-align: left; cursor: pointer;
+}
+.pill-times { flex: none; font-weight: 700; font-size: 16px; line-height: 22px; white-space: nowrap; }
+.pill-times .arrow { margin: 0 6px; color: #009CA4; }
+.pill-to { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--type-body); text-transform: capitalize; }
+.trip-expand .chev { flex: none; margin-left: auto; transform: rotate(90deg); }
+.trip-card.is-min .trip-close { margin: 0; }
 /* Leave room so the card never covers the last of the page */
 body.has-trip .route-main { padding-bottom: 190px; }
+body.has-trip.trip-collapsed .route-main { padding-bottom: 90px; }
 /* In the full-screen map's sheet, the card sits under the route header */
 .map-sheet .trip-card { position: static; margin: 0 16px 12px; box-shadow: none; max-width: none; }
 
@@ -812,3 +834,6 @@ body.has-trip .route-main { padding-bottom: 190px; }
   border: 0; border-radius: 18px; background: none; cursor: pointer;
 }
 .trip-remove:hover { background: var(--interactive-hover-neutral); }
+/* Toasts sit above the trip card, never on top of it */
+body.has-trip .toast { bottom: 156px; }
+body.has-trip.trip-collapsed .toast { bottom: 80px; }
