@@ -754,9 +754,9 @@ html.in-device .map.is-full .leaflet-bottom.leaflet-right { top: 30px; left: 26p
   border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer;
 }
 .stop-pick .time { pointer-events: none; }
-/* Hover: the stop name turns teal. Destination: its time turns teal. No containers. */
-.stop-pick:hover .name, .stop-pick:focus-visible .name { color: #009CA4; }
-.stop.is-dest .time { background: #009CA4; border-color: #009CA4; color: var(--type-on-color); }
+/* Hover: the stop name turns blue. Destination: its time fills blue, like a selected time. No containers. */
+.stop-pick:hover .name, .stop-pick:focus-visible .name { color: var(--interactive-primary); }
+.stop.is-dest .time { background: var(--interactive-primary); border-color: var(--interactive-primary); color: var(--type-on-color); }
 .pick-hint { display: block; margin-top: 4px; font-weight: 500; color: var(--type-body); }
 
 /* The card: pinned to the bottom of the screen on the page, in the sheet's peek on the full map */
