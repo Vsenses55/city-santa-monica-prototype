@@ -744,3 +744,73 @@ html.in-device::-webkit-scrollbar { display: none; }
 /* Full-screen map inside the frame: keep the top controls and map credits clear of the rounded screen corners */
 html.in-device .map.is-full .map-controls { top: 26px; right: 22px; }
 html.in-device .map.is-full .leaflet-bottom.leaflet-right { top: 30px; left: 26px; }
+
+/* =================================================================
+   TRIP: pick a destination among the next stops → trip card
+   ================================================================= */
+/* Next stops are tappable: tap one to make it your destination */
+.stop-pick {
+  width: calc(100% + 24px); margin: -10px -12px; padding: 10px 12px;
+  border: 0; border-radius: 12px; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.stop-pick:hover { background: var(--interactive-hover-neutral); }
+.stop-pick .time { pointer-events: none; }
+.stop.is-dest { margin: -2px -12px 0; padding: 12px 12px 20px; border-radius: 14px; border-bottom-color: transparent;
+  background: rgb(0 156 164 / .1); box-shadow: inset 0 0 0 2px #009CA4; }
+.stop.is-dest .stop-pick:hover { background: none; }
+.stop.is-dest .time { background: #009CA4; border-color: #009CA4; color: var(--type-on-color); }
+.pick-hint { display: block; margin-top: 4px; font-weight: 500; color: var(--type-body); }
+
+/* The card: pinned to the bottom of the screen on the page, in the sheet's peek on the full map */
+.trip-card {
+  position: fixed; z-index: 40; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom));
+  max-width: 520px; margin-inline: auto;
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start;
+  padding: 14px 14px 14px 16px; border-radius: 20px; background: var(--surface-default);
+  border: 2px solid #009CA4; box-shadow: 0 10px 30px rgb(0 0 0 / .18);
+  cursor: pointer;
+}
+.trip-card[hidden] { display: none; }
+.trip-card .badge { min-width: 36px; height: 36px; font-size: 16px; margin-top: 2px; }
+.trip-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.trip-stops { display: flex; gap: 8px; min-width: 0; font-size: 14px; line-height: 20px; color: var(--type-strong); }
+.trip-stops .lbl { flex: none; width: 34px; color: var(--type-body); }
+.trip-stops .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; text-transform: capitalize; }
+.trip-times { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin-top: 6px; font-size: 14px; line-height: 20px; color: var(--type-strong); }
+.trip-times strong { font-size: 19px; line-height: 24px; font-weight: 700; }
+.trip-times .arrow { color: #009CA4; font-weight: 700; }
+.trip-meta { flex-basis: 100%; color: var(--type-body); font-size: 13px; }
+.trip-left { margin-top: 6px; padding: 4px 8px; border-radius: 8px; background: var(--surface-subtle); font-size: 13px; line-height: 18px; color: var(--type-strong); }
+.trip-actions { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; align-self: stretch; gap: 10px; }
+.trip-close { width: 32px; height: 32px; display: grid; place-items: center; margin: -6px -6px 0 0; border: 0; border-radius: 16px; background: none; cursor: pointer; }
+.trip-close:hover { background: var(--interactive-hover-neutral); }
+.trip-save {
+  min-width: 64px; height: 32px; padding: 0 14px; border-radius: 16px; cursor: pointer;
+  border: 1px solid var(--interactive-primary); background: var(--surface-default);
+  font: inherit; font-weight: 700; font-size: 14px; color: var(--interactive-primary);
+}
+.trip-save[aria-pressed="true"] { background: var(--interactive-primary); color: var(--type-on-color); }
+/* Leave room so the card never covers the last of the page */
+body.has-trip .route-main { padding-bottom: 190px; }
+/* In the full-screen map's sheet, the card sits under the route header */
+.map-sheet .trip-card { position: static; margin: 0 16px 12px; box-shadow: none; max-width: none; }
+
+/* Home: My Trips */
+.my-trips-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-bottom: 20px; }
+.trip-list { display: flex; flex-direction: column; gap: 12px; }
+.saved-trip { position: relative; }
+.saved-trip a {
+  display: flex; align-items: flex-start; gap: 14px; padding: 14px 52px 14px 14px;
+  border: 1px solid var(--border-default); border-radius: 16px; background: var(--surface-default);
+  color: var(--type-strong); text-decoration: none;
+}
+.saved-trip a:hover { background: var(--interactive-hover-neutral); }
+.saved-trip .labels { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.saved-trip .t-strong { font-size: 17px; line-height: 22px; text-transform: capitalize; }
+.saved-trip .t-small { color: var(--type-body); }
+.saved-trip .t-small strong { color: var(--type-strong); }
+.trip-remove {
+  position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; display: grid; place-items: center;
+  border: 0; border-radius: 18px; background: none; cursor: pointer;
+}
+.trip-remove:hover { background: var(--interactive-hover-neutral); }

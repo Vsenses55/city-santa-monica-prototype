@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="js/device-frame.js?v=20261114"></script>
+  <script src="js/device-frame.js?v=20261122"></script>
   <title>Big Blue Bus — Select Your Route</title>
   <meta name="description" content="Find a Big Blue Bus route, check service alerts and plan a trip.">
   <link rel="preload" href="fonts/Urbanist-Bold.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/Urbanist-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="icon" href="assets/img/logo-mini.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/tokens.css?v=20261114">
-  <link rel="stylesheet" href="css/site.css?v=20261114">
+  <link rel="stylesheet" href="css/tokens.css?v=20261122">
+  <link rel="stylesheet" href="css/site.css?v=20261122">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -60,6 +60,12 @@
           </div>
         </form>
       </div>
+    </section>
+
+    <!-- My Trips: stop pairs saved from a route page, each with its next scheduled bus -->
+    <section class="my-trips wrap" aria-labelledby="h-trips" hidden>
+      <div class="my-trips-head"><h2 id="h-trips" class="t-section cap">My Trips</h2><p class="feed-status">Next scheduled buses</p></div>
+      <ul class="trip-list"></ul>
     </section>
 
     <!-- Service alerts (Component 1: horizontal carousel) -->
@@ -195,9 +201,9 @@
 </div>
 
 <div class="toast" role="status" aria-live="polite"></div>
-<script src="js/data.js?v=20261114" defer></script>
-<script src="js/site.js?v=20261114" defer></script>
-<script src="js/home.js?v=20261114" defer></script>
-<script src="js/live-alerts.js?v=20261114" defer></script>
+<script src="js/data.js?v=20261122" defer></script>
+<script src="js/site.js?v=20261122" defer></script>
+<script src="js/home.js?v=20261122" defer></script>
+<script src="js/live-alerts.js?v=20261122" defer></script>
 </body>
 </html>

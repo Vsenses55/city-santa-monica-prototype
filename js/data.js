@@ -56,10 +56,50 @@
     },
   };
 
+  /* Saved trips (this browser only). A trip is a stop pair on a route, not one
+     departure, so it stays useful: it always offers the next bus. */
+  const TRIPS_KEY = "bbb-saved-trips", MAX_TRIPS = 4;
+  const tripKey = (t) => `${t.r}|${t.from}|${t.to}`;
+  const trips = {
+    get() { try { return JSON.parse(localStorage.getItem(TRIPS_KEY)) || []; } catch (e) { return []; } },
+    has(t) { return trips.get().some((x) => tripKey(x) === tripKey(t)); },
+    save(list) { try { localStorage.setItem(TRIPS_KEY, JSON.stringify(list)); return true; } catch (e) { return false; } },
+    add(t) { return trips.save([t, ...trips.get().filter((x) => tripKey(x) !== tripKey(t))].slice(0, MAX_TRIPS)); },
+    remove(t) { return trips.save(trips.get().filter((x) => tripKey(x) !== tripKey(t))); },
+  };
+  const tripHref = (t) => `route.html?r=${encodeURIComponent(t.r)}&d=${t.d}&from=${encodeURIComponent(t.from)}&to=${encodeURIComponent(t.to)}`;
+
+  const addDays = (c, n) => fromDate(new Date(c.y, c.m - 1, c.d + n));
+  /* The next bus that serves both stops (in that order): on `date` leaving at or
+     after `after` minutes, else on the next service day (looks up to a week ahead).
+     Returns { trip, dep, arr, date, dayOffset } or null. */
+  function nextTrip(route, dirIdx, fromIdx, toIdx, date, after) {
+    const d = route.directions[dirIdx];
+    if (!d) return null;
+    for (let k = 0; k < 8; k++) {
+      const c = k ? addDays(date, k) : date, svc = activeServices(route, c), min = k ? -1 : after;
+      let best = null;
+      d.trips.forEach((t) => {
+        if (!svc.has(t.s)) return;
+        const a = t.t[fromIdx], b = t.t[toIdx];
+        if (a == null || b == null || b < a || a < min) return;
+        if (!best || a < best.dep) best = { trip: t, dep: a, arr: b };
+      });
+      if (best) return { ...best, date: c, dayOffset: k };
+    }
+    return null;
+  }
+
+  /* "Robertson Bl NB & Venice Bl NS (Culver City Station)" -> "Robertson Bl & Venice Bl" */
+  const shortStop = (name) => name.replace(/\s*\([^)]*\)/g, "")
+    .replace(/\b(NB|SB|EB|WB|NS|FS|MB)\b/gi, "")
+    .replace(/\s+&\s+/g, " & ").replace(/\s{2,}/g, " ").replace(/\s+:/g, ":").trim();
+
   window.BBBData = {
     routes: () => getJSON("data/routes.json"),
     route: (short) => getJSON(`data/route-${encodeURIComponent(short)}.json`),
-    laParts, today, ymd, weekday, sameDay, fromDate, toDate, runs, activeServices, fmt, recent,
+    laParts, today, ymd, weekday, sameDay, fromDate, toDate, addDays, runs, activeServices, fmt, recent,
+    trips, tripKey, tripHref, nextTrip, shortStop,
     routeHref: (short) => `route.html?r=${encodeURIComponent(short)}`,
   };
 })();

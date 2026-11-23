@@ -17,11 +17,12 @@
                    [720, 960, "12pm–4pm"], [960, 1200, "4pm–8pm"], [1200, 1440, "8pm–12am"]];
   const inWindow = (m, w) => (m >= 1440 ? m - 1440 : m) >= WINDOWS[w][0] && (m >= 1440 ? m - 1440 : m) < WINDOWS[w][1];
   const PREVIEW_STOPS = 6;
+  const winOf = (m) => Math.min(5, Math.floor((m >= 1440 ? m - 1440 : m) / 240));
 
   let route, st, map, layers = {};
   const defaults = () => {
     const now = D.laParts();
-    return { dir: 0, date: D.today(), win: Math.min(5, Math.floor(now.minutes / 240)), open: null, trip: null, showAll: false };
+    return { dir: 0, date: D.today(), win: Math.min(5, Math.floor(now.minutes / 240)), open: null, trip: null, dest: null, showAll: false };
   };
 
   /* ---------- helpers ---------- */
@@ -140,7 +141,7 @@
       dp.pick = { y: +k.slice(0, 4), m: +k.slice(4, 6), d: +k.slice(6) };
       $$(".dp-day", pop).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
       // Picking a day applies it right away
-      st.date = dp.pick; st.trip = null; B.closePop(true); update();
+      st.date = dp.pick; st.trip = null; st.leftNote = null; B.closePop(true); update();
     });
   }
 
@@ -188,38 +189,46 @@
               : `Buses in this direction don't stop here on ${esc(longDay(st.date))}.`}</p>`;
       return;
     }
-    // Default selection: the next departure if viewing today, otherwise the first in range
+    // Default selection: the next departure if viewing today, otherwise the first in range.
+    // With a destination chosen, prefer buses that actually reach it.
     if (!st.trip || !deps.some((d) => d.trip === st.trip)) {
       const now = D.laParts().minutes;
-      const next = isToday() ? deps.find((d) => (d.m >= 1440 ? d.m - 1440 : d.m) >= now) : null;
-      st.trip = (next || deps[0]).trip;
+      const reaches = (d) => st.dest == null || (d.trip.t[st.dest] != null && d.trip.t[st.dest] >= d.m);
+      const pool = deps.filter(reaches).length ? deps.filter(reaches) : deps;
+      const next = isToday() ? pool.find((d) => d.m >= now) : null;
+      st.trip = (next || pool[0]).trip;
     }
+    // A destination this bus doesn't reach is dropped
+    if (st.dest != null && st.trip.t[st.dest] == null) st.dest = null;
     const chips = deps.map((d) => `<button class="time" type="button" aria-pressed="${d.trip === st.trip}" data-m="${d.m}">${D.fmt(d.m)}</button>`).join("");
     // Where the selected bus goes after this stop
     const stops = dir().stops, t = st.trip.t;
     const after = [];
     for (let k = i + 1; k < stops.length; k++) if (t[k] != null) after.push(k);
+    if (st.dest != null && after.indexOf(st.dest) >= PREVIEW_STOPS) st.showAll = true; // keep the destination in view
     const shown = st.showAll ? after : after.slice(0, PREVIEW_STOPS);
     const rows = shown.map((k) => {
-      const s = stops[k];
+      const s = stops[k], isDest = k === st.dest;
       const xfer = s.transfers.length ? `<ul class="transfers" aria-label="Transfer routes">${s.transfers.map((r) =>
         `<li><a class="badge" href="${D.routeHref(r)}" aria-label="Transfer to ${r.startsWith("R") ? "Rapid " + r.slice(1) : "Route " + r}">${esc(r.replace(/^R/, ""))}</a></li>`).join("")}</ul>` : "";
-      return `<li class="stop"><div class="stop-head"><p class="name t-body">${esc(s.name)}: #${esc(s.code)}</p><span class="time time-static">${D.fmt(t[k])}</span></div>${xfer}</li>`;
+      // Tapping a next stop makes it the destination (tap again to clear)
+      return `<li class="stop${isDest ? " is-dest" : ""}"><button class="stop-head stop-pick" type="button" data-k="${k}" aria-pressed="${isDest}" aria-label="${esc(s.name)}, arrives ${D.fmt(t[k])}. ${isDest ? "Your destination. Tap to clear" : "Set as destination"}"><span class="name t-body">${esc(s.name)}: #${esc(s.code)}</span><span class="time time-static">${D.fmt(t[k])}</span></button>${xfer}</li>`;
     }).join("");
     const more = after.length > PREVIEW_STOPS
       ? `<button class="link-btn stops-more" type="button">${st.showAll ? "Show fewer stops" : `Show all ${after.length} stops on this trip`}</button>` : "";
     const headsign = st.trip.h ? ` <span class="trip-note">This trip ends at ${esc(st.trip.h)}.</span>` : "";
     panel.innerHTML = `
       <div class="departures" role="group" aria-label="Departures from ${esc(stops[i].name)}"><div class="row">${chips}</div></div>
-      ${after.length ? `<p class="after-label">Next stops for the ${D.fmt(st.trip.t[i])} bus${headsign}</p>
+      ${after.length ? `<p class="after-label">Next stops for the ${D.fmt(st.trip.t[i])} bus${headsign}${st.dest == null ? ` <span class="pick-hint">Tap your stop to see when you'd arrive.</span>` : ""}</p>
       <ol class="stops" aria-label="Arrival times">${rows}</ol>${more}` : `<p class="empty-msg">This is the last stop for this trip.</p>`}`;
+    renderTrip();
   }
 
   function openStop(i, scroll) {
     const prev = st.open;
     st.open = (prev === i) ? null : i;
     st.picked = st.open != null; // the rider opened this stop
-    st.trip = null; st.showAll = false;
+    st.trip = null; st.showAll = false; st.dest = null; st.leftNote = null;
     [prev, st.open].forEach((k) => {
       if (k == null) return;
       const btn = $(`#acc-b${k}`), panel = $(`#acc-p${k}`);
@@ -231,6 +240,7 @@
       if (open) renderPanel(k); else panel.innerHTML = "";
     });
     highlightStop();
+    renderTrip();
     if (st.open != null && document.body.classList.contains("map-open")) { $(".map-sheet").classList.add("is-half"); focusStop(); }
     if (scroll && st.open != null) $(`#acc-b${st.open}`).scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -242,11 +252,96 @@
     if (chip) {
       const i = st.open, m = +chip.dataset.m;
       const d = departuresAt(i).find((x) => x.m === m);
-      if (d) { st.trip = d.trip; renderPanel(i); $(`#acc-p${i} button.time[aria-pressed="true"]`).focus(); }
+      if (d) { st.trip = d.trip; st.leftNote = null; renderPanel(i); $(`#acc-p${i} button.time[aria-pressed="true"]`).focus(); }
       return;
     }
-    if (e.target.closest(".stops-more")) { st.showAll = !st.showAll; renderPanel(st.open); }
+    if (e.target.closest(".stops-more")) { st.showAll = !st.showAll; renderPanel(st.open); return; }
+    const pick = e.target.closest(".stop-pick");
+    if (pick) {
+      const k = +pick.dataset.k;
+      st.dest = st.dest === k ? null : k; st.leftNote = null;
+      renderPanel(st.open);
+      if (st.dest != null) fitTrip();
+      const again = $(`#acc-p${st.open} .stop-pick[data-k="${k}"]`);
+      if (again) again.focus({ preventScroll: true });
+    }
   });
+
+  /* ---------- trip card: from → to, departs, arrives ---------- */
+  const card = $("#trip-card");
+  // Roll forward: once the chosen bus has left, move the whole page (time chip,
+  // Trips filter, day if needed) to the next bus that serves both stops
+  function rollIfLeft() {
+    if (!route || st.open == null || st.dest == null || !st.trip || !isToday()) return false;
+    const now = D.laParts().minutes, dep = st.trip.t[st.open];
+    if (dep == null || dep >= now) return false;
+    const n = D.nextTrip(route, st.dir, st.open, st.dest, st.date, now);
+    if (!n) return false;
+    st.leftNote = n.dayOffset === 0
+      ? `The ${D.fmt(dep)} bus has left. Here's the next one.`
+      : `No more buses between these stops today. Showing the first one ${n.dayOffset === 1 ? "tomorrow" : D.toDate(n.date).toLocaleDateString("en-US", { weekday: "long" })}.`;
+    st.trip = n.trip; st.date = n.date; st.win = winOf(n.dep);
+    return true;
+  }
+  function tripInfo() {
+    if (!route || st.open == null || st.dest == null || !st.trip) return null;
+    const stops = dir().stops, i = st.open, k = st.dest, trip = st.trip;
+    let count = 0;
+    for (let j = i + 1; j <= k; j++) if (trip.t[j] != null) count++;
+    const dayNote = isToday() ? "" : D.sameDay(st.date, D.addDays(D.today(), 1)) ? "Tomorrow"
+      : D.toDate(st.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    return { from: stops[i], to: stops[k], dep: trip.t[i], arr: trip.t[k], left: st.leftNote, dayNote, count, trip };
+  }
+  function renderTrip() {
+    if (!card) return;
+    if (rollIfLeft()) { update(); return; } // update() re-renders the panel, which calls back here
+    const t = tripInfo();
+    card.hidden = !t;
+    document.body.classList.toggle("has-trip", !!t);
+    drawSegment();
+    syncPeek();
+    if (!t) return;
+    const saved = D.trips.has(savedShape(t));
+    const times = `<p class="trip-times"><strong>${t.dayNote ? `${t.dayNote} ` : ""}${D.fmt(t.dep)}</strong><span class="arrow" aria-hidden="true">→</span><strong>${D.fmt(t.arr)}</strong>
+         <span class="trip-meta">${t.count} stop${t.count === 1 ? "" : "s"} · ${t.arr - t.dep} min · scheduled</span></p>`;
+    card.innerHTML = `
+      <span class="badge" aria-hidden="true">${esc(route.badge)}</span>
+      <div class="trip-body">
+        <p class="trip-stops"><span class="lbl">From</span><span class="nm">${esc(D.shortStop(t.from.name))}</span></p>
+        <p class="trip-stops"><span class="lbl">To</span><span class="nm">${esc(D.shortStop(t.to.name))}</span></p>
+        ${t.left ? `<p class="trip-left">${esc(t.left)}</p>` : ""}
+        ${times}
+      </div>
+      <div class="trip-actions">
+        <button class="trip-close" type="button" aria-label="Clear destination"><img src="assets/icons/close.svg" width="14" height="14" alt=""></button>
+        <button class="trip-save" type="button" aria-pressed="${saved}">${saved ? "Saved" : "Save"}</button>
+      </div>`;
+  }
+  // What gets stored for "My Trips": ids (stable across data rebuilds) plus labels for the home page
+  const savedShape = (t) => ({ r: route.short, d: st.dir, from: t.from.id, to: t.to.id,
+    badge: route.badge, label: route.label, fromName: t.from.name, toName: t.to.name, headsign: dir().headsign });
+  if (card) {
+    card.addEventListener("click", (e) => {
+      const t = tripInfo();
+      if (!t) return;
+      if (e.target.closest(".trip-close")) { st.dest = null; renderPanel(st.open); return; }
+      if (e.target.closest(".trip-save")) {
+        const shape = savedShape(t);
+        if (D.trips.has(shape)) { D.trips.remove(shape); B.toast && B.toast("Removed from My Trips."); }
+        else if (D.trips.add(shape)) B.toast && B.toast("Saved. Find it under My Trips on the home page.");
+        else B.toast && B.toast("This browser won't let the site save trips.");
+        renderTrip();
+        return;
+      }
+      // Anywhere else on the card: bring the trip back into view
+      if (document.body.classList.contains("map-open")) { $(".map-sheet").classList.add("is-half"); setTimeout(fit, 320); }
+      const b = $(`#acc-b${st.open}`);
+      if (b) b.scrollIntoView({ behavior: "smooth", block: "start" });
+      fitTrip();
+    });
+    // Keep the card current: when the chosen bus leaves, it rolls to the next one
+    setInterval(() => { if (!card.hidden) renderTrip(); }, 30000);
+  }
 
   /* ---------- map (Leaflet + OpenStreetMap) ---------- */
   function initMap() {
@@ -304,20 +399,28 @@
   }
   // How far the sheet is pushed down (0 = half height, larger = peeking)
   function sheetOffset(sheet) { return sheet.classList.contains("is-half") ? 0 : sheet.offsetHeight - peekHeight(sheet); }
-  function peekHeight(sheet) { return $(".sheet-handle", sheet).offsetHeight + $(".sheet-head", sheet).offsetHeight + 8; }
+  function peekHeight(sheet) {
+    const c = $(".trip-card", sheet);
+    return $(".sheet-handle", sheet).offsetHeight + $(".sheet-head", sheet).offsetHeight + (c && !c.hidden ? c.offsetHeight + 12 : 0) + 8;
+  }
+  function syncPeek() {
+    const sheet = $(".map-sheet");
+    if (sheet && document.body.classList.contains("map-open")) sheet.style.setProperty("--peek", peekHeight(sheet) + "px");
+  }
 
   /* ---------- Phones: full-screen map with the stops in a bottom sheet ---------- */
   function initFullMap(wrap, touch) {
     const exp = $(".map-expand", wrap), sheet = $(".map-sheet", wrap), body = $(".sheet-body", sheet);
     const note = $("#schedule-note");
     const home = document.createComment("schedule list home");
+    const cardHome = document.createComment("trip card home");
     let full = false;
 
     function setFull(on, fromHistory) {
       if (on === full) return;
       full = on;
-      if (on) { note.before(home); body.append(note, acc); }
-      else { home.after(note, acc); home.remove(); }
+      if (on) { note.before(home); body.append(note, acc); if (card) { card.before(cardHome); $(".sheet-head", sheet).after(card); } }
+      else { home.after(note, acc); home.remove(); if (card) { cardHome.after(card); cardHome.remove(); } }
       wrap.classList.toggle("is-full", on);
       document.body.classList.toggle("map-open", on);
       exp.setAttribute("aria-pressed", String(on));
@@ -398,6 +501,7 @@
     fit();
     sizeStops();
     highlightStop();
+    drawSegment();
   }
   // Zoomed out, full-size stop dots bunch into a chain that hides the line: scale them with zoom
   function sizeStops() {
@@ -405,6 +509,36 @@
     const z = map.getZoom();
     const r = z >= 15 ? 5 : z >= 14 ? 4 : z >= 13 ? 3 : 2;
     layers.stops.eachLayer((m) => m.setStyle({ radius: m.isEnd ? Math.max(r + 2, 5) : r, weight: z >= 13 ? 2 : 1.5 }));
+  }
+  // Highlight the stretch you'll ride, from the open stop to your destination
+  function drawSegment() {
+    if (!map || !layers.path) return;
+    ["seg", "segCase", "dest"].forEach((k) => { if (layers[k]) map.removeLayer(layers[k]); layers[k] = null; });
+    if (st.open == null || st.dest == null) return;
+    const d = dir(), a = d.stops[st.open], b = d.stops[st.dest];
+    const pts = d.path.length ? d.path : d.stops.map((s) => [s.lat, s.lon]);
+    const near = (s, from) => {
+      let best = Infinity, idx = from;
+      for (let j = from; j < pts.length; j++) {
+        const dd = (pts[j][0] - s.lat) ** 2 + (pts[j][1] - s.lon) ** 2;
+        if (dd < best) { best = dd; idx = j; }
+      }
+      return idx;
+    };
+    const ia = near(a, 0), ib = near(b, ia);
+    const seg = [[a.lat, a.lon], ...pts.slice(ia + 1, ib), [b.lat, b.lon]];
+    layers.segCase = L.polyline(seg, { color: "#FFFFFF", weight: 11, opacity: 1, interactive: false }).addTo(map);
+    layers.seg = L.polyline(seg, { color: "#009CA4", weight: 7, opacity: 1, interactive: false }).addTo(map);
+    layers.dest = L.circleMarker([b.lat, b.lon], { radius: 8, color: "#009CA4", weight: 4, fillColor: "#FFFFFF", fillOpacity: 1, interactive: false }).addTo(map);
+    if (layers.sel) layers.sel.bringToFront();
+  }
+  // Zoom the map to the trip (both stops in view)
+  function fitTrip() {
+    if (!map || st.open == null || st.dest == null) return;
+    const s = dir().stops, a = s[st.open], b = s[st.dest];
+    const full = $("#route-map").classList.contains("is-full"), sheet = $(".map-sheet");
+    const bottom = full ? sheet.offsetHeight - sheetOffset(sheet) + 40 : 40;
+    map.fitBounds(L.latLngBounds([[a.lat, a.lon], [b.lat, b.lon]]), { paddingTopLeft: [40, full ? 80 : 40], paddingBottomRight: [40, bottom], maxZoom: 16 });
   }
   function highlightStop() {
     if (!map || !layers.stops) return;
@@ -445,7 +579,7 @@
     // across the street open: the nearest stop in the other direction, if one
     // is within about 250 m. Otherwise the new direction starts collapsed too.
     const from = st.picked && st.open != null ? dir().stops[st.open] : null;
-    st.dir = i; st.trip = null; st.showAll = false;
+    st.dir = i; st.trip = null; st.showAll = false; st.dest = null; st.leftNote = null;
     st.open = counterpart(from);
     st.picked = st.open != null;
     update(true);
@@ -466,6 +600,18 @@
     return best <= 250 ? idx : null;
   }
 
+  // Opened from My Trips: route.html?r=8&d=0&from=<stop id>&to=<stop id>
+  function restoreTrip() {
+    const q = new URLSearchParams(location.search), d = +q.get("d"), from = q.get("from"), to = q.get("to");
+    if (!from || !to || !route.directions[d]) return;
+    st.dir = d;
+    const stops = dir().stops, i = stops.findIndex((s) => s.id === from), k = stops.findIndex((s) => s.id === to);
+    if (i < 0 || k <= i) { st.dir = 0; return; }
+    const n = D.nextTrip(route, st.dir, i, k, D.today(), D.laParts().minutes);
+    st.open = i; st.dest = k; st.picked = true;
+    if (n) { st.date = n.date; st.win = winOf(n.dep); st.trip = n.trip; }
+  }
+
   function fail(msg) {
     acc.removeAttribute("aria-busy");
     bind("label", "Route not found");
@@ -477,7 +623,7 @@
     st = defaults();
     D.recent.add(route.short);
     wireListFilter("direction", (v) => setDir(v));
-    wireListFilter("trips", (v) => { st.win = v; st.trip = null; update(); });
+    wireListFilter("trips", (v) => { st.win = v; st.trip = null; st.leftNote = null; update(); });
     wireDatePicker();
     $(".dir-toggle").addEventListener("click", () => setDir((st.dir + 1) % route.directions.length));
     $(".filter-clear").addEventListener("click", () => {
@@ -491,7 +637,9 @@
       B.toast && B.toast("Filters reset to today and the current time.");
     });
     $("#download-csv").addEventListener("click", downloadCSV);
+    restoreTrip();
     initMap();
     update(true);
+    if (st.dest != null) setTimeout(() => { fitTrip(); const b = $(`#acc-b${st.open}`); if (b) b.scrollIntoView({ block: "start" }); }, 200);
   }).catch(() => fail(`We couldn't find a schedule for “${esc(short)}”.`));
 })();

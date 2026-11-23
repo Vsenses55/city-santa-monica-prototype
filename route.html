@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="js/device-frame.js?v=20261114"></script>
+  <script src="js/device-frame.js?v=20261122"></script>
   <title>Route Schedule — Big Blue Bus</title>
   <meta name="description" content="Big Blue Bus route map, stop-by-stop schedules and live service alerts.">
   <link rel="preload" href="fonts/Urbanist-Bold.woff2" as="font" type="font/woff2" crossorigin>
@@ -11,8 +11,8 @@
   <link rel="icon" href="assets/img/logo-mini.svg" type="image/svg+xml">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
-  <link rel="stylesheet" href="css/tokens.css?v=20261114">
-  <link rel="stylesheet" href="css/site.css?v=20261114">
+  <link rel="stylesheet" href="css/tokens.css?v=20261122">
+  <link rel="stylesheet" href="css/site.css?v=20261122">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -135,6 +135,8 @@
         <div class="alerts-body"></div>
       </section>
     </div>
+    <!-- Your trip: appears once you pick a destination among the next stops -->
+    <section class="trip-card" id="trip-card" aria-label="Your trip" aria-live="polite" hidden></section>
   </main>
 
   <footer class="site-footer">
@@ -192,9 +194,9 @@
 <script src="vendor/leaflet/leaflet.js" defer></script>
 <script src="vendor/maplibre/maplibre-gl.js" defer></script>
 <script src="vendor/maplibre/leaflet-maplibre-gl.js" defer></script>
-<script src="js/data.js?v=20261114" defer></script>
-<script src="js/site.js?v=20261114" defer></script>
-<script src="js/route-page.js?v=20261114" defer></script>
-<script src="js/live-alerts.js?v=20261114" defer></script>
+<script src="js/data.js?v=20261122" defer></script>
+<script src="js/site.js?v=20261122" defer></script>
+<script src="js/route-page.js?v=20261122" defer></script>
+<script src="js/live-alerts.js?v=20261122" defer></script>
 </body>
 </html>
