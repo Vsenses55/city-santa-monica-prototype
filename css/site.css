@@ -279,10 +279,11 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
   display: flex; align-items: flex-start; gap: 16px; text-decoration: none; color: var(--type-strong);
   min-height: 44px; border-radius: 12px;
 }
-.route-item .labels { display: flex; flex-direction: column; gap: 2px; text-transform: capitalize; }
+.route-item .labels { display: flex; flex-direction: column; gap: 0; text-transform: capitalize; }
 .route-item .labels { min-width: 0; }
-.route-item .labels .t-strong { font-size: 19px; line-height: 24px; } /* route name: 19px on phones too */
-.route-item > .badge { flex: none; margin-top: 3px; } /* centered on a one-line item, same spot on two-line ones */
+.route-item .labels .t-strong { font-size: 19px; line-height: 22px; } /* route name: 19px on phones too */
+.route-item .labels .t-small { line-height: 18px; }
+.route-item > .badge { flex: none; margin-top: 0; } /* name + streets = 40px, the badge's height */
 .route-item .t-small { overflow-wrap: anywhere; }
 .route-item:hover { color: #000; }
 .route-item:hover .badge { background: #007D83; }
