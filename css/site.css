@@ -523,7 +523,8 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
 .acc-btn .ico { width: 44px; height: 44px; display: grid; place-items: center; margin-right: -15px; flex: none; }
 .acc-btn .ico img { width: 14px; height: 14px; }
 .acc-panel {
-  background: var(--surface-subtle); padding: 48px 32px; border-radius: 0 0 8px 8px;
+  --panel-pad: 32px; /* side padding; the next-stops rows bleed past it, edge to edge */
+  background: var(--surface-subtle); padding: 48px var(--panel-pad); border-radius: 0 0 8px 8px;
   display: flex; flex-direction: column; gap: 24px;
 }
 .acc-panel[hidden] { display: none; }
@@ -554,8 +555,10 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
 .time[aria-pressed="true"] { background: var(--interactive-primary); border-color: var(--interactive-primary); color: var(--type-on-color); }
 .time-static { cursor: default; }
 
-.stops { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--border-divider); padding-top: 24px; }
-.stop { display: flex; flex-direction: column; gap: 16px; padding-bottom: 28px; border-bottom: 1px solid var(--border-divider); }
+.stops { display: flex; flex-direction: column; margin-inline: calc(-1 * var(--panel-pad)); border-top: 1px solid var(--border-divider); }
+/* Each next stop is a full-width band between dividers; hovering fills it with light gray */
+.stop { display: flex; flex-direction: column; gap: 16px; padding: 22px var(--panel-pad) 26px; border-bottom: 1px solid var(--border-divider); transition: background-color .12s ease; }
+.stop:has(.stop-pick:hover) { background: var(--interactive-hover-neutral); }
 .stop-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .stop-head .name { text-transform: capitalize; white-space: pre-wrap; }
 .transfers { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -697,7 +700,7 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
   .messaging .t-heading { max-width: none; }
   .pill-download { width: 100%; }
   .acc-btn, .acc:not(.is-first) .acc-btn { padding-inline: 24px; }
-  .acc-panel { padding: 24px; }
+  .acc-panel { --panel-pad: 24px; padding: 24px; }
   .time { width: 90px; }
   .stop-head { flex-direction: column; align-items: flex-start; gap: 8px; }
 
