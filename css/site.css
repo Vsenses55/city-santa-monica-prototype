@@ -415,9 +415,11 @@ a.alert-card:hover { background: var(--interactive-hover-neutral); }
   background: var(--surface-subtle); border-radius: var(--radius-field);
   padding: 13px 20px;
 }
-.filter { position: relative; }
-.filter .pill { padding: 0 44px; }
-.filter .pill .caret { display: none; }
+.filter { position: relative; min-width: 0; max-width: 100%; }
+.filter .pill { padding: 0 44px; max-width: 100%; }
+.filter .pill .caret { display: none; flex: none; }
+/* A long direction name (Route 44's runs ~50 characters) is cut with "…" instead of widening the page */
+.filter .pill .lbl { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .filter-clear { margin-left: 4px; }
 
 /* Map */
@@ -687,7 +689,7 @@ button.time::after { content: ""; position: absolute; inset: -6px -3px; } /* 44p
   .map-sheet .acc-btn { scroll-margin-top: 0; }
   .alert-bar { order: 3; }
   .filters { order: 2; flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 16px; border-radius: 0; }
-  .filter .pill { width: 100%; }
+  .filter .pill { width: 100%; padding: 0 20px; }
   .filter .pill .caret { display: block; }
   .filter-clear { align-self: center; }
   .popover { left: 0; right: 0; min-width: 0; }
