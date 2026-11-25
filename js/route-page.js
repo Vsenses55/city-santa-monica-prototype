@@ -318,15 +318,14 @@
       syncPeek();
       return;
     }
-    const times = `<p class="trip-times"><strong>${t.dayNote ? `${t.dayNote} ` : ""}${D.fmt(t.dep)}</strong><span class="arrow" aria-hidden="true">→</span><strong>${D.fmt(t.arr)}</strong>
-         <span class="trip-meta">${t.count} stop${t.count === 1 ? "" : "s"} · ${t.arr - t.dep} min · scheduled</span></p>`;
+    // Same look as a My Trips card on the home page
     card.innerHTML = `
-      <span class="badge" aria-hidden="true">${esc(route.badge)}</span>
+      <span class="badge badge-lg" aria-hidden="true">${esc(route.badge)}</span>
       <div class="trip-body">
-        <p class="trip-stops"><span class="lbl">From</span><span class="nm">${esc(D.shortStop(t.from.name))}</span></p>
-        <p class="trip-stops"><span class="lbl">To</span><span class="nm">${esc(D.shortStop(t.to.name))}</span></p>
+        <p class="trip-title">${esc(D.shortStop(t.from.name))} <span aria-hidden="true">→</span><span class="sr-only">to</span> ${esc(D.shortStop(t.to.name))}</p>
+        <p class="trip-when">Departs <strong>${t.dayNote ? `${esc(t.dayNote)} ` : ""}${D.fmt(t.dep)}</strong> · arrives ${D.fmt(t.arr)}</p>
+        <p class="trip-meta">${t.count} stop${t.count === 1 ? "" : "s"} · ${t.arr - t.dep} min · scheduled</p>
         ${t.left ? `<p class="trip-left">${esc(t.left)}</p>` : ""}
-        ${times}
       </div>
       <div class="trip-actions">
         <div class="trip-top">

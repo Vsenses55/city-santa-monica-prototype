@@ -763,26 +763,24 @@ html.in-device .map.is-full .leaflet-bottom.leaflet-right { top: 30px; left: 26p
 .stop.is-dest .time { background: var(--interactive-primary); border-color: var(--interactive-primary); color: var(--type-on-color); }
 .pick-hint { display: block; margin-top: 4px; font-weight: 500; color: var(--type-body); }
 
-/* The card: pinned to the bottom of the screen on the page, in the sheet's peek on the full map */
+/* The card: pinned to the bottom of the screen on the page, in the sheet's peek on the
+   full map. Styled like a My Trips card on the home page: thin gray border, no accent stroke. */
 .trip-card {
   position: fixed; z-index: 40; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom));
   max-width: 520px; margin-inline: auto;
-  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start;
-  padding: 14px 14px 14px 16px; border-radius: 20px; background: var(--surface-default);
-  border: 2px solid #009CA4; box-shadow: 0 10px 30px rgb(0 0 0 / .18);
+  display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: start;
+  padding: 14px; border-radius: 16px; background: var(--surface-default);
+  border: 1px solid var(--border-default); box-shadow: 0 6px 20px rgb(0 0 0 / .10);
   cursor: pointer;
 }
 .trip-card[hidden] { display: none; }
-.trip-card .badge { min-width: 36px; height: 36px; font-size: 16px; margin-top: 2px; }
-.trip-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.trip-stops { display: flex; gap: 8px; min-width: 0; font-size: 14px; line-height: 20px; color: var(--type-strong); }
-.trip-stops .lbl { flex: none; width: 34px; color: var(--type-body); }
-.trip-stops .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; text-transform: capitalize; }
-.trip-times { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin-top: 6px; font-size: 14px; line-height: 20px; color: var(--type-strong); }
-.trip-times strong { font-size: 19px; line-height: 24px; font-weight: 700; }
-.trip-times .arrow { color: #009CA4; font-weight: 700; }
-.trip-meta { flex-basis: 100%; color: var(--type-body); font-size: 13px; }
-.trip-left { margin-top: 6px; padding: 4px 8px; border-radius: 8px; background: var(--surface-subtle); font-size: 13px; line-height: 18px; color: var(--type-strong); }
+.trip-card .badge-lg { margin: 0; }
+.trip-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.trip-title { font-weight: 700; font-size: 17px; line-height: 22px; color: var(--type-strong); text-transform: capitalize; }
+.trip-when { font-size: var(--small-size); line-height: var(--small-lh); color: var(--type-body); }
+.trip-when strong { color: var(--type-strong); }
+.trip-meta { font-size: 13px; line-height: 18px; color: var(--type-body); }
+.trip-left { margin-top: 4px; padding: 4px 8px; border-radius: 8px; background: var(--surface-subtle); font-size: 13px; line-height: 18px; color: var(--type-strong); }
 .trip-actions { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; align-self: stretch; gap: 10px; }
 .trip-close { width: 32px; height: 32px; display: grid; place-items: center; margin: -6px -6px 0 0; border: 0; border-radius: 16px; background: none; cursor: pointer; }
 .trip-close:hover { background: var(--interactive-hover-neutral); }
@@ -809,7 +807,7 @@ html.in-device .map.is-full .leaflet-bottom.leaflet-right { top: 30px; left: 26p
   font: inherit; color: var(--type-strong); text-align: left; cursor: pointer;
 }
 .pill-times { flex: none; font-weight: 700; font-size: 16px; line-height: 22px; white-space: nowrap; }
-.pill-times .arrow { margin: 0 6px; color: #009CA4; }
+.pill-times .arrow { margin: 0 6px; }
 .pill-to { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--type-body); text-transform: capitalize; }
 .trip-expand .chev { flex: none; margin-left: auto; transform: rotate(90deg); }
 .trip-card.is-min .trip-close { margin: 0; }
@@ -818,6 +816,8 @@ body.has-trip .route-main { padding-bottom: 190px; }
 body.has-trip.trip-collapsed .route-main { padding-bottom: 90px; }
 /* In the full-screen map's sheet, the card sits under the route header */
 .map-sheet .trip-card { position: static; margin: 0 16px 12px; box-shadow: none; max-width: none; }
+.map-sheet .trip-card:not(.is-min) { grid-template-columns: 1fr auto; } /* the sheet header already shows the route badge */
+.map-sheet .trip-card:not(.is-min) > .badge { display: none; }
 
 /* Home: My Trips */
 .my-trips-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-bottom: 20px; }
